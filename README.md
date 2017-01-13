@@ -18,12 +18,12 @@ Options:
 ## Automatic menu generation
 Order of items in menu is defined in a JSON file.
 
-# Stable URL
+## Stable URLs
 Even when files get moves and/or renamed.
 
-# Variables interpolation with `{{mustache}}` syntax
+## Variables interpolation with `{{mustache}}` syntax
 
-## Variables can de defined in JSON configuration file
+### Variables can de defined in JSON configuration file
 ```JSON
 "variables": {
   "version": "1.2.3"
@@ -31,7 +31,7 @@ Even when files get moves and/or renamed.
 ```
 will replace all `{{version}}` tags in all Markdown files and HTML templates.
 
-## Variables can be extracted from a code project
+### Variables can be extracted from a code project
 Declare a source project in the configuration file like:
 ```
 "project": "git@github.com:Linkurious/Dokapi.git#main"
@@ -58,15 +58,15 @@ This API is awesome.
 {{my.api.example}}
 ```
 
-# Generate as multi-page or single-page
+## Generate as multi-page or single-page
 
 Two modes. You must provide a different template for each mode.
 
-# Input watcher to re-generate output while working
+## Input watcher to re-generate output while working
 
 Use the `-w` flag to re-generate the output when a file in input folder changes.
 
-# Sanity checks everywhere
+## Sanity checks everywhere
 
 - checks for broken internal links
 - checks for missing images
