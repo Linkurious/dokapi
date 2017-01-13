@@ -75,3 +75,6 @@ Use the `-w` flag to re-generate the output when a file in input folder changes.
 - checks for unused code-block variables
 - checks for unused markdown files (not referenced in structure)
 
+## Okapis are awesome
+
+![picture of an okapi](https://upload.wikimedia.org/wikipedia/commons/b/b5/Okapia_johnstoni01.jpg)
