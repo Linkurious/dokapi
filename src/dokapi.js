@@ -21,7 +21,7 @@ cli
 
 try {
   Utils.check.dir('input', cli.input);
-  Utils.check.dir('output', cli.output);
+  //Utils.check.dir('output', cli.output);
   Utils.check.values('output-type', cli.outputType, ['page', 'site'], true);
 } catch(e) {
   printError(e);
