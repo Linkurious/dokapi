@@ -22,7 +22,7 @@ class PdfGenerator extends AbstractGenerator {
   constructor(book, target, projectSources) {
     super(
       book,
-      path.resolve(target, 'pdf'),
+      path.resolve(target, 'page'),
       projectSources,
       `
        <h1 style="page-break-before: always"><a id="{{entry.key}}__">&nbsp;</a>{{entry.title}}</h1>
@@ -35,7 +35,7 @@ class PdfGenerator extends AbstractGenerator {
    */
   $generate() {
     // single page template
-    const htmlTemplatePath = this.book._path(this.book.config.pdfTemplate);
+    const htmlTemplatePath = this.book._path(this.book.config.pageTemplate);
     const htmlTemplate = fs.readFileSync(htmlTemplatePath, {encoding: 'utf8'});
     const templateParts = htmlTemplate.split('{{body}}', 2);
 

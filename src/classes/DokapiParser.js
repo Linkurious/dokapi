@@ -66,7 +66,7 @@ class DokapiParser {
       description: {required: true, check: checkFilePath},
       variables: {required: true, type: 'object'},
       siteTemplate: {required: true, check: ['file', rootPath]},
-      pdfTemplate: {required: true, check: ['file', rootPath]},
+      pageTemplate: {required: true, check: ['file', rootPath]},
       numbering: {required: false, type: 'boolean'},
       externalLinksToBlank: {required: false, type: 'boolean'},
       assets: {required: true, check: ['dir', rootPath]},

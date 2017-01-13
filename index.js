@@ -22,13 +22,13 @@ cli
 try {
   Utils.check.dir('input', cli.input);
   Utils.check.dir('output', cli.output);
-  Utils.check.values('output-type', cli.outputType, ['pdf', 'site'], true);
+  Utils.check.values('output-type', cli.outputType, ['page', 'site'], true);
 } catch(e) {
   printError(e);
   process.exit(1);
 }
 
-console.log('MDoc generator:');
+console.log('Dokapi generator:');
 for (let k of ['input', 'output', 'outputType', 'watch', 'createMissing', 'refreshProject']) {
   console.log(' - ' + k + ': ' + cli[k]);
 }

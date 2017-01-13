@@ -46,7 +46,7 @@ class Dokapi {
    * @param {boolean} [config.numbering]
    * @param {boolean} [config.externalLinksToBlank]
    * @param {string} config.siteTemplate HTML template file for site output
-   * @param {string} config.pdfTemplate HTML template file for PDF output
+   * @param {string} config.pageTemplate HTML template file for page output
    * @param {string} config.description
    * @param {Array<Entry>} config.index
    * @param {Object<String>} config.variables
@@ -142,14 +142,14 @@ class Dokapi {
   }
 
   /**
-   * @param {string} outputType 'site' or 'pdf'
+   * @param {string} outputType 'site' or 'page'
    * @param {string} outputDir Output directory
    * @param {boolean} [forceDownloadProject=false]
    * @param {boolean} [createMissingMarkdown=false]
    * @returns {Promise}
    */
   generate(outputType, outputDir, forceDownloadProject, createMissingMarkdown) {
-    Utils.check.values('outputType', outputType, ['pdf', 'site'], true);
+    Utils.check.values('outputType', outputType, ['page', 'site'], true);
     Utils.check.dir('output', outputDir);
 
     // noinspection PointlessBooleanExpressionJS
@@ -167,8 +167,10 @@ class Dokapi {
     let generator;
     if (outputType === 'site') {
       generator = new SiteGenerator(this, outputDir, projectSources);
-    } else if (outputType === 'pdf') {
+    } else if (outputType === 'page') {
       generator = new PdfGenerator(this, outputDir, projectSources);
+    } else {
+      throw new Error(`Unknown output type: ${outputType}.`);
     }
     generator.generate();
   }
