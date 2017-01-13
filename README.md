@@ -10,7 +10,7 @@ Usage:
 Options:
 - `-i` or `--input`: path of input folder.
 - `-o` or `--output`: path to output folder.
-- `-t` or `--type`: type of desired output (`single`  or `site`, default: `site`).
+- `-t` or `--type`: type of desired output (`site`  or `page`, default: `site`).
 - `-w` or `--watch`: keep running and dynamicly regenerate output when input changes (watches input folder for changes).
 - `-c` or `--create-missing`: automatically create missing referenced markdown files. 
 - `-r` or `--refresh-project`: force to re-download in code project used to extract code comments (cached by default)
