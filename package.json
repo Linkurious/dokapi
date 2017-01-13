@@ -1,0 +1,26 @@
+{
+  "name": "dokapi",
+  "description": "A docgen alternative capable of fetching documentation blocs from code comments",
+  "version": "1.0.0",
+  "private": false,
+  "scripts": {
+    "//": "invoked using >npm run [script-name]",
+    "admin": "src/makeDoc.js content/admin",
+    "user": "src/makeDoc.js content/user"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "bluebird": "latest",
+    "fs-extra": "latest",
+    "valcheck": "1.0.4",
+    "lodash.difference": "4.4.0",
+    "esprima": "3.1.x",
+    "lodash": "4.17.x",
+    "marky-markdown": "9.0.1",
+    "watch": "1.0.1",
+    "commander": "2.9.0",
+    "html-pdf": "2.1.0"
+  }
+}
+
