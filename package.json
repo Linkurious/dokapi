@@ -43,7 +43,7 @@
     "patch": "npm version patch && git push && npm publish"
   },
   "bin": {
-    "dokapi": "src/index.js"
+    "dokapi": "index.js"
   },
   "dependencies": {
     "bluebird": "latest",
