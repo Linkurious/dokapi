@@ -144,6 +144,13 @@ class Dokapi {
    */
   generate(outputType, outputDir, forceDownloadProject, createMissingMarkdown) {
     Utils.check.values('outputType', outputType, ['page', 'site'], true);
+
+    // if the output dir does not exist, create it
+    if (!fs.existsSync(outputDir)) {
+      fs.emptyDirSync(outputDir);
+    }
+
+    // check that the output is a directory (if it existed already)
     Utils.check.dir('output', outputDir);
 
     // noinspection PointlessBooleanExpressionJS
