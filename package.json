@@ -1,26 +1,75 @@
 {
   "name": "dokapi",
-  "description": "A docgen alternative capable of fetching documentation blocs from code comments",
+  "description": "A Markdown-based Website generator with advanced features",
+  "keywords": [
+    "documentation",
+    "generator",
+    "markdown",
+    "html",
+    "pdf",
+    "api",
+    "doc",
+    "template",
+    "mustache",
+    "variable",
+    "code",
+    "okapi"
+  ],
+
+  "engines": {
+    "node": "4.6.0"
+  },
   "version": "1.0.0",
   "private": false,
+
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Linkurious/dokapi.git"
+  },
+  "author": {
+    "name": "David Rapin",
+    "url": "https://github.com/davidrapin"
+  },
+  "contributors": [
+  ],
+  "bugs": {
+    "url": "https://github.com/Linkurious/dokapi/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "src",
+    "index.js"
+  ],
+
   "scripts": {
     "//": "invoked using >npm run [script-name]",
-    "admin": "src/makeDoc.js content/admin",
-    "user": "src/makeDoc.js content/user"
+    "lint": "eslint ./src",
+    "patch": "npm version patch && git push && npm publish"
   },
+  "bin": {
+    "dokapi": "src/index.js"
+  },
+
   "dependencies": {
-  },
-  "devDependencies": {
     "bluebird": "latest",
     "fs-extra": "latest",
     "valcheck": "1.0.4",
     "lodash.difference": "4.4.0",
-    "esprima": "3.1.x",
-    "lodash": "4.17.x",
+    "lodash.defaults": "4.2.0",
     "marky-markdown": "9.0.1",
     "watch": "1.0.1",
     "commander": "2.9.0",
     "html-pdf": "2.1.0"
+  },
+
+  "devDependencies": {
+    "eslint": "3.9.1",
+    "eslint-plugin-import-order": "^2.1.4",
+    "ink-docstrap": "1.1.0",
+    "istanbul": "~1.1.0-alpha.1",
+    "jsdoc": "3.4.1",
+    "mocha": "3.0.2",
+    "should": "11.1.0"
   }
 }
 
