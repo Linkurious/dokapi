@@ -3,8 +3,8 @@
 
 const path = require('path');
 const cli = require('commander');
-const Utils = require('./classes/Utils');
-const DokapiParser = require('./classes/DokapiParser');
+const Utils = require('./src/classes/Utils');
+const DokapiParser = require('./src/classes/DokapiParser');
 
 const printError = (e, stack) => {
   console.log('\x1b[31m' + (stack ? e.stack : e.message) + '\x1b[0m');
