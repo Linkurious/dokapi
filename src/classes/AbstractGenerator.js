@@ -411,8 +411,14 @@ class AbstractGenerator {
     Utils.forReferences(body, referenceKey => {
       let value;
 
-      if (referenceKey.startsWith('file:')) {
-        //
+      if (this.book.isFileRef(referenceKey)) {
+        const tag = referenceKey.startsWith('editfile:') ? 'textarea' : 'code';
+        const filePath = this.book.getFileRefPath(templatePath, referenceKey);
+        const ext = path.extname(filePath);
+        value = '\n<' + tag + ' class="' + (ext && ext.length ? ext.substr(1) : '') + '">' + '\n' +
+          fs.readFileSync(filePath, {encoding: 'utf8'}) +
+          '\n</' + tag + '>\n';
+
       } else if (referenceKey in variableOverrides) {
         value = variableOverrides[referenceKey];
       } else if (this.variables.has(referenceKey)) {

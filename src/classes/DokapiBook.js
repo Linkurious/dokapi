@@ -42,15 +42,16 @@ class DokapiBook {
    * @param {string} config.siteTemplate HTML template file for site output
    * @param {string} config.pageTemplate HTML template file for page output
    * @param {string} config.description
-   * @param {Array<Entry>} config.index
+   * @param {Entry[]} config.index
    * @param {Object<String>} config.variables
-   * @param {Array<string>} referencedContent
+   * @param {string[]} referencedContent
    * @param {object} [options]
    * @param {string} [options.annotation="dokapi"] The annotation used to extract code variables.
    */
   constructor(rootDir, config, referencedContent, options) {
     this.rootDir = rootDir;
     this.config = config;
+    /** @type {string[]} */
     this.referencedContent = referencedContent;
     this.options = Utils.defaults(options, {annotation: 'dokapi'});
 
@@ -272,6 +273,44 @@ class DokapiBook {
     return references;
   }
 
+  // noinspection JSMethodCanBeStatic
+  /**
+   * @param {string} referenceKey
+   * @returns {boolean}
+   */
+  isFileRef(referenceKey) {
+    return referenceKey.startsWith('file:') || referenceKey.startsWith('editfile:');
+  }
+
+  // noinspection JSMethodCanBeStatic
+  /**
+   * @param {string} referrerPath
+   * @param {string} fileReference
+   * @returns {string} the target file path (guaranteed to exist)
+   */
+  getFileRefPath(referrerPath, fileReference) {
+    const templateFolder = path.dirname(referrerPath);
+    // strip file reference prefix, then resolve absolute path (relative to containing file)
+    const filePath = path.resolve(
+      templateFolder,
+      fileReference.substr(fileReference.indexOf(':') + 1)
+    );
+    let stat;
+    try {
+      stat = fs.lstatSync(filePath);
+    } catch(e) {
+      throw new ReferenceError(
+        `Could not resolve file reference: "${fileReference}" for "${referrerPath}": ${e.message}`
+      );
+    }
+    if (!stat.isFile()) {
+      throw new ReferenceError(
+        `Target of file reference: "${fileReference}" in "${referrerPath}" is not a file.`
+      );
+    }
+    return filePath;
+  }
+
   /**
    * @param {Map<string, Variable>} variables
    * @param {Map<string, Reference>} references
@@ -282,9 +321,12 @@ class DokapiBook {
     for (let reference of references.values()) {
       if (reference.key.startsWith('entry.')) {
         // ignore entry-specific variables
-        continue;
-      }
-      if (!variables.has(reference.key)) {
+
+      } else if (this.isFileRef(reference.key)) {
+        // check file reference
+        this.getFileRefPath(reference.file, reference.key);
+
+      } else if (!variables.has(reference.key)) {
         errors.push(`Reference "${reference.key}" used in "${reference.file}" is never defined.`);
       }
     }

@@ -123,7 +123,7 @@ class Utils {
    * @param {function(string)} callback called for each Moustache reference
    */
   static forReferences(body, callback) {
-    const blockRefRe = /\{\{([a-z0-9.]+)}}/g;
+    const blockRefRe = /\{\{((?:file:|editfile:)?[a-z0-9.]+)}}/g;
     let match;
     while ((match = blockRefRe.exec(body)) !== null) {
       callback(match[1]);
@@ -140,7 +140,7 @@ class Utils {
     markdown = markdown.replace(/```JS(?:ON)?\n/ig, '```js\n');
 
     return marky(markdown, {
-      sanitize: true,            // remove script tags and stuff
+      sanitize: false,            // remove script tags and stuff
       linkify: true,             // turn orphan URLs into hyperlinks
       highlightSyntax: true,     // run highlights on fenced code blocks
       prefixHeadingIds: false,    // prevent DOM id collisions
