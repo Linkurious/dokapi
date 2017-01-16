@@ -38,7 +38,7 @@
   ],
   "main": "src/dokapi.js",
   "bin": {
-    "dokapi": "src/index.js"
+    "dokapi": "src/dokapi.js"
   },
   "scripts": {
     "//": "invoked using >npm run [script-name]",

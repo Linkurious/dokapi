@@ -410,7 +410,10 @@ class AbstractGenerator {
 
     Utils.forReferences(body, referenceKey => {
       let value;
-      if (referenceKey in variableOverrides) {
+
+      if (referenceKey.startsWith('file:')) {
+        //
+      } else if (referenceKey in variableOverrides) {
         value = variableOverrides[referenceKey];
       } else if (this.variables.has(referenceKey)) {
         value = this.variables.get(referenceKey).markdown && renderMarkdown
