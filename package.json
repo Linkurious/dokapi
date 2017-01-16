@@ -37,13 +37,13 @@
     "src"
   ],
   "main": "src/dokapi.js",
+  "bin": {
+    "dokapi": "src/index.js"
+  },
   "scripts": {
     "//": "invoked using >npm run [script-name]",
     "lint": "eslint ./src",
     "patch": "npm version patch && git push && npm publish"
-  },
-  "bin": {
-    "dokapi": "index.js"
   },
   "dependencies": {
     "bluebird": "latest",
