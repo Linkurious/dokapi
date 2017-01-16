@@ -1,83 +1,129 @@
 #!/usr/bin/env node
 'use strict';
 
-const path = require('path');
-const cli = require('commander');
 const Utils = require('./classes/Utils');
 const DokapiParser = require('./classes/DokapiParser');
 
-const printError = (e, stack) => {
-  console.log('\x1b[31m' + (stack ? e.stack : e.message) + '\x1b[0m');
-};
+class Dokapi {
 
-cli
-  .option('-i, --input <directory>', 'Set the input directory')
-  .option('-o, --output <directory>', 'Set the output directory')
-  .option('-w, --watch', 'Watch the input and re-generate the output on changes')
-  .option('-c, --create-missing', 'Create missing referenced Markdown files')
-  .option('-r, --refresh-project', 'Force to re-clone the input project')
-  .option('-t, --output-type <type>', 'Choose the output type', 'site')
-  .parse(process.argv);
+  /**
+   * @param {object} options
+   * @param {string} options.input Input folder path
+   * @param {string} options.output Output folder path
+   * @param {string} options.outputType Output type ("site" or "page")
+   * @param {boolean} options.watch Whether to keep watching the input folder and re-generate the output on changes.
+   * @param {boolean} options.createMissing Whether to create missing referenced markdown files.
+   * @param {boolean} options.refreshProject Whether to refresh the copy (clone) of the code project.
+   * @param {object} [logger]
+   * @param {function(string)} [logger.info]
+   * @param {function(string)} [logger.error]
+   */
+  constructor(options, logger) {
+    if (!logger) { logger = {}; }
 
-try {
-  Utils.check.dir('input', cli.input);
-  //Utils.check.dir('output', cli.output);
-  Utils.check.values('output-type', cli.outputType, ['page', 'site'], true);
-} catch(e) {
-  printError(e);
-  process.exit(1);
+    /** @type {function} */
+    this.$logInfo = logger.info || console.log;
+
+    /** @type {function} */
+    this.$logError = logger.error || logger.info || console.error;
+
+    this.options = options;
+  }
+
+  printInfo(msg) {
+    this.$logInfo(msg);
+  }
+
+  printError(error, printStack) {
+    this.$logError('\x1b[31m' + (printStack ? error.stack : error.message) + '\x1b[0m');
+  }
+
+  /**
+   * @param {number} duration
+   * @param {function} fn
+   * @returns {Function}
+   * @protected
+   */
+  static $debounce(duration, fn) {
+    let active = false;
+    return function() {
+      const orgThis = this;
+      const orgArgs = Array.prototype.slice.call(arguments, 0);
+
+      // first call of the sequence
+      if (!active) {
+        active = true;
+        setTimeout(() => {
+          active = false;
+          fn.apply(orgThis, orgArgs);
+        }, duration);
+      }
+    };
+  }
+
+  $watch(folder, action) {
+    const watch = require('watch');
+    watch.watchTree(folder, Dokapi.$debounce(100, () => {
+      this.printInfo('Watched folder changed...');
+      try {
+        action();
+      } catch(e) {
+        this.printInfo('GENERATION FAILED');
+        this.printError(e, true);
+      }
+    }));
+  }
+
+  $generate() {
+    const t = Date.now();
+    const book = DokapiParser.parse(this.options.input);
+    book.log = m => {
+      this.printInfo(' * ' + m);
+    };
+    book.generate(
+      this.options.outputType,
+      this.options.output,
+      this.options.refreshProject,
+      this.options.createMissing
+    );
+    book.log(`Generated in ${((Date.now() - t) / 1000).toFixed(2)}s :)`);
+  }
+
+  run() {
+    this.printInfo('Dokapi generator:');
+    for (let k of ['input', 'output', 'outputType', 'watch', 'createMissing', 'refreshProject']) {
+      this.printInfo(' - ' + k + ': ' + this.options[k]);
+    }
+
+    if (this.options.watch) {
+      this.$watch(this.options.input, () => this.$generate());
+    } else {
+      this.$generate();
+    }
+  }
 }
 
-console.log('Dokapi generator:');
-for (let k of ['input', 'output', 'outputType', 'watch', 'createMissing', 'refreshProject']) {
-  console.log(' - ' + k + ': ' + cli[k]);
-}
+if (require.main === module) {
+  // called directly
 
-/**
- * @param {number} duration
- * @param {function} fn
- * @returns {Function}
- */
-const debounce = (duration, fn) => {
-  let active = false;
-  return function() {
-    const orgThis = this;
-    const orgArgs = Array.prototype.slice.call(arguments, 0);
+  const cli = require('commander');
+  cli
+    .option('-i, --input <directory>', 'Set the input directory')
+    .option('-o, --output <directory>', 'Set the output directory')
+    .option('-w, --watch', 'Watch the input and re-generate the output on changes')
+    .option('-c, --create-missing', 'Create missing referenced Markdown files')
+    .option('-r, --refresh-project', 'Force to re-clone the input project')
+    .option('-t, --output-type <type>', 'Choose the output type', 'site')
+    .parse(process.argv);
+  const dokapi = new Dokapi(cli);
 
-    // first call of the sequence
-    if (!active) {
-      active = true;
-      setTimeout(() => {
-        active = false;
-        fn.apply(orgThis, orgArgs);
-      }, duration);
-    }
-  };
-};
-
-const doGenerate = () => {
-  const t = Date.now();
-  const book = DokapiParser.parse(cli.input);
-  book.log = function(m) { console.log(' * ' + m); };
-  book.generate(cli.outputType, cli.output, cli.refreshProject, cli.createMissing);
-  book.log(`Generated in ${((Date.now() - t) / 1000).toFixed(2)}s :)`);
-};
-
-const doWatch = (folder, action) => {
-  const watch = require('watch');
-  watch.watchTree(folder, debounce(100, () => {
-    console.log('Watched folder changed...');
-    try {
-      action();
-    } catch(e) {
-      console.log('GENERATION FAILED');
-      printError(e, true);
-    }
-  }));
-};
-
-if (cli.watch) {
-  doWatch(cli.input, doGenerate);
+  try {
+    dokapi.run();
+  } catch(e) {
+    dokapi.printError(e);
+    process.exit(1);
+  }
 } else {
-  doGenerate();
+  // required as a module
+  module.exports = Dokapi;
 }
