@@ -179,7 +179,10 @@ class DokapiBook {
    * @private
    */
   _getProjectSources(outputDir, forceDownloadProject) {
-    if (this.config.project.startsWith('git@')) {
+    if (!this.config.project) {
+      this.projectType = 'none';
+    } else if (this.config.project.startsWith('git@')) {
+      this.projectType = 'github';
       const projectSourcesTarget = path.resolve(outputDir, 'project');
       if (!fs.existsSync(projectSourcesTarget) || forceDownloadProject) {
         this.log(`Cloning project code (${this.config.project}) to ${projectSourcesTarget}...`);
@@ -189,6 +192,7 @@ class DokapiBook {
       }
       return projectSourcesTarget;
     } else {
+      this.projectType = 'local';
       const projectSourcePath = path.isAbsolute(this.config.project)
         ? this.config.project
         : path.resolve(this.rootDir, this.config.project);
@@ -208,15 +212,35 @@ class DokapiBook {
     /** @type {Map<string, Variable>} */
     const variables = new Map();
 
-    this.log(`Extracting @${annotation} variable from project code...`);
-    Utils.getAllFiles(projectSources, /\.js$/, /node_modules/).forEach(jsFile => {
-      Utils.extractComments(jsFile).forEach(comment => {
-        if (!(annotation in comment.keys)) { return; }
-        let key = comment.keys[annotation];
-        let text = comment.lines.join('\n');
-        variables.set(key, {text: text, key: key, file: jsFile, markdown: true});
+    if (this.projectType === 'none') {
+      this.log('Skipping code variable extraction (no code project).');
+    } else {
+      this.log(`Extracting @${annotation} variable from project code...`);
+      Utils.getAllFiles(projectSources, /\.js$/, /node_modules/).forEach(jsFile => {
+        Utils.extractComments(jsFile).forEach(comment => {
+          if (!(annotation in comment.keys)) {
+            return;
+          }
+          let key = comment.keys[annotation];
+          let text = comment.lines.join('\n');
+          variables.set(key, {text: text, key: key, file: jsFile, markdown: true});
+        });
       });
-    });
+
+      // extract package.json string variables
+      const packagePath = path.resolve(projectSources, 'package.json');
+      const packageInfo = fs.readJsonSync(packagePath, {encoding: 'utf8'});
+      for (let key in packageInfo) {
+        if (!packageInfo.hasOwnProperty(key) || typeof packageInfo[key] !== 'string') {
+          continue;
+        }
+        let varKey = 'package.' + key;
+        variables.set(
+          varKey,
+          {key: varKey, text: packageInfo[key], builtin: true, markdown: false, file: packagePath}
+        );
+      }
+    }
 
     // loading builtin variables
     Object.keys(this.config.variables).forEach(variableKey => {
@@ -237,20 +261,6 @@ class DokapiBook {
       markdown: false,
       file: DokapiBook.CONFIG_FILE
     });
-
-    // extract package.json string variables
-    const packagePath = path.resolve(projectSources, 'package.json');
-    const packageInfo = fs.readJsonSync(packagePath, {encoding: 'utf8'});
-    for (let key in packageInfo) {
-      if (!packageInfo.hasOwnProperty(key) || typeof packageInfo[key] !== 'string') {
-        continue;
-      }
-      let varKey = 'package.' + key;
-      variables.set(
-        varKey,
-        {key: varKey, text: packageInfo[key], builtin: true, markdown: false, file: packagePath}
-      );
-    }
 
     return variables;
   }
