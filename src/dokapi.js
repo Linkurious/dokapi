@@ -35,13 +35,19 @@ class Dokapi {
   }
 
   printError(error, printStack) {
-    this.$logError('\x1b[31m' + (printStack ? error.stack : error.message) + '\x1b[0m');
+    this.$logError('\x1b[31m' + error.message + '\x1b[0m');
+    if (printStack) {
+      this.$logError('\x1b[214m' + error.stack + '\x1b[0m');
+    }
   }
 
   /**
-   * @param {number} duration
-   * @param {function} fn
-   * @returns {Function}
+   * Debounce `fn` of `duration` milliseconds.
+   * Prevents `fn` to be called more than once every `duration` milliseconds.
+   *
+   * @param {number} duration Debounce duration in milliseconds.
+   * @param {function} fn The function to debounce.
+   * @returns {Function} The debounced wrapper to `fn`.
    * @protected
    */
   static $debounce(duration, fn) {
@@ -61,6 +67,10 @@ class Dokapi {
     };
   }
 
+  /**
+   * @param {string} folder
+   * @param {function} action Called when `folder` changes
+   */
   $watch(folder, action) {
     const watch = require('watch');
     watch.watchTree(folder, Dokapi.$debounce(100, () => {
@@ -69,7 +79,7 @@ class Dokapi {
         action();
       } catch(e) {
         this.printInfo('GENERATION FAILED');
-        this.printError(e, true);
+        this.printError(e);
       }
     }));
   }

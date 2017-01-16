@@ -29,7 +29,7 @@ const PdfGenerator = require('./PdfGenerator');
  * @property {string} file Markdown file in which the reference was found.
  */
 
-class Dokapi {
+class DokapiBook {
   /**
    *
    * @param {string} rootDir
@@ -46,6 +46,7 @@ class Dokapi {
    * @param {Object<String>} config.variables
    * @param {Array<string>} referencedContent
    * @param {object} [options]
+   * @param {string} [options.annotation="dokapi"] The annotation used to extract code variables.
    */
   constructor(rootDir, config, referencedContent, options) {
     this.rootDir = rootDir;
@@ -69,7 +70,7 @@ class Dokapi {
 
   checkOrphanContent() {
     // check that all content files in `rootDir`/content are referenced in `config`
-    const markdownContent = Utils.getAllFiles(this._path(Dokapi.CONTENT_DIR), /\.md$/);
+    const markdownContent = Utils.getAllFiles(this._path(DokapiBook.CONTENT_DIR), /\.md$/);
     const notReferenced = Utils.difference(markdownContent, this.referencedContent);
     if (notReferenced.length > 0) {
       throw new Error('Some Markdown files are not referenced:\n' + notReferenced.join('\n'));
@@ -94,7 +95,7 @@ class Dokapi {
    * @returns {string} absolute path
    */
   resolveContent(content) {
-    return this._path(Dokapi.CONTENT_DIR, content);
+    return this._path(DokapiBook.CONTENT_DIR, content);
   }
 
   /**
@@ -187,9 +188,12 @@ class Dokapi {
       }
       return projectSourcesTarget;
     } else {
-      this.log(`Using local project sources at (${this.config.project}).`);
-      Utils.check.dir('config.project', this.config.project);
-      return path.resolve(this.config.project);
+      const projectSourcePath = path.isAbsolute(this.config.project)
+        ? this.config.project
+        : path.resolve(this.rootDir, this.config.project);
+      this.log(`Using local project sources at "${projectSourcePath}".`);
+      Utils.check.dir('config.project', projectSourcePath);
+      return projectSourcePath;
     }
   }
 
@@ -219,7 +223,7 @@ class Dokapi {
         key: variableKey + '',
         text: this.config.variables[variableKey],
         builtin: true,
-        file: Dokapi.CONFIG_FILE,
+        file: DokapiBook.CONFIG_FILE,
         markdown: false
       });
     });
@@ -230,7 +234,7 @@ class Dokapi {
       text: Date.now() + '',
       builtin: true,
       markdown: false,
-      file: Dokapi.CONFIG_FILE
+      file: DokapiBook.CONFIG_FILE
     });
 
     // extract package.json string variables
@@ -325,4 +329,4 @@ class Dokapi {
   }
 }
 
-module.exports = Dokapi;
+module.exports = DokapiBook;

@@ -3,7 +3,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const Utils = require('./Utils');
-const Dokapi = require('./Dokapi');
+const DokapiBook = require('./DokapiBook');
 
 const LINK_MAILTO = /^mailto:[^\s]+$/ig;
 const LINK_ABSOLUTE = /^https?:\/\/[^\s]+$/ig;
@@ -19,7 +19,7 @@ const LINK_HASH = /^#([a-zA-Z0-9=-]+)$/ig;
 class AbstractGenerator {
 
   /**
-   * @param {Dokapi} book
+   * @param {DokapiBook} book
    * @param {string} target
    * @param {string} projectSources
    * @param {string} htmlTemplateBody

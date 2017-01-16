@@ -8,7 +8,7 @@ const AbstractGenerator = require('./AbstractGenerator');
 class SiteGenerator extends AbstractGenerator {
 
   /**
-   * @param {Dokapi} book
+   * @param {DokapiBook} book
    * @param {string} target
    * @param {string} projectSources
    */

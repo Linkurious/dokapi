@@ -9,7 +9,7 @@ const AbstractGenerator = require('./AbstractGenerator');
 class PdfGenerator extends AbstractGenerator {
 
   /**
-   * @param {Dokapi} book
+   * @param {DokapiBook} book
    * @param {string} target
    * @param {string} projectSources
    */

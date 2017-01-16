@@ -2,7 +2,7 @@
 
 const fs = require('fs-extra');
 const path = require('path');
-const Dokapi = require('./Dokapi');
+const DokapiBook = require('./DokapiBook');
 const Utils = require('./Utils');
 
 class DokapiParser {
@@ -12,11 +12,11 @@ class DokapiParser {
    * Checks that all referenced files exist.
    *
    * @param {string} inputDirectory
-   * @return {Dokapi} the parsed book
+   * @return {DokapiBook} the parsed book
    */
   static parse(inputDirectory) {
     Utils.check.dir('input', inputDirectory);
-    const configPath = path.resolve(inputDirectory, Dokapi.CONFIG_FILE);
+    const configPath = path.resolve(inputDirectory, DokapiBook.CONFIG_FILE);
     inputDirectory = path.resolve(inputDirectory);
 
     let fileContent;
@@ -35,7 +35,7 @@ class DokapiParser {
 
     const referencedContent = DokapiParser._validate(inputDirectory, bookContent);
 
-    return new Dokapi(inputDirectory, bookContent, referencedContent);
+    return new DokapiBook(inputDirectory, bookContent, referencedContent);
   }
 
   /**
@@ -51,7 +51,7 @@ class DokapiParser {
     // check that all files referenced in "content" do exist in `dir`
     const checkFilePath = (key, value) => {
       Utils.check.regexp(key, value, /^[a-z0-9/-]+\.md$/);
-      let filePath = path.resolve(rootPath, Dokapi.CONTENT_DIR, value);
+      let filePath = path.resolve(rootPath, DokapiBook.CONTENT_DIR, value);
       referencedFiles.push(filePath);
     };
     Utils.check.properties('book', book, {

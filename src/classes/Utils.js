@@ -36,7 +36,7 @@ class Utils {
     const fileNames = fs.readdirSync(dir);
     for (let fileName of fileNames) {
       let filePath = path.resolve(dir, fileName);
-      if (excluded && excluded.test(filePath)) {
+      if (excluded && excluded.test(fileName)) {
         // ignore excluded file
         continue;
       }
