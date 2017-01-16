@@ -157,13 +157,7 @@ class Dokapi {
     this._checkMarkdownFiles(!!createMissingMarkdown);
 
     // get project code
-    const projectSources = path.resolve(outputDir, 'project');
-    if (!fs.existsSync(projectSources) || forceDownloadProject) {
-      this.log(`Cloning project code (${this.config.project}) to ${projectSources}...`);
-      Utils.gitClone(this.config.project, projectSources);
-    } else {
-      this.log(`Using cached copy of project from ${projectSources}...`);
-    }
+    const projectSources = this._getProjectSources(outputDir, forceDownloadProject);
 
     let generator;
     if (outputType === 'site') {
@@ -177,6 +171,29 @@ class Dokapi {
   }
 
   /**
+   * @param {string} outputDir
+   * @param {boolean} forceDownloadProject
+   * @return {string} project sources directory
+   * @private
+   */
+  _getProjectSources(outputDir, forceDownloadProject) {
+    if (this.config.project.startsWith('git@')) {
+      const projectSourcesTarget = path.resolve(outputDir, 'project');
+      if (!fs.existsSync(projectSourcesTarget) || forceDownloadProject) {
+        this.log(`Cloning project code (${this.config.project}) to ${projectSourcesTarget}...`);
+        Utils.gitClone(this.config.project, projectSourcesTarget);
+      } else {
+        this.log(`Using cached copy of project from ${projectSourcesTarget}...`);
+      }
+      return projectSourcesTarget;
+    } else {
+      this.log(`Using local project sources at (${this.config.project}).`);
+      Utils.check.dir('config.project', this.config.project);
+      return path.resolve(this.config.project);
+    }
+  }
+
+  /**
    * @param {string} projectSources
    * @returns {Map.<string, Variable>}
    */
@@ -187,7 +204,7 @@ class Dokapi {
     const variables = new Map();
 
     this.log(`Extracting @${annotation} variable from project code...`);
-    Utils.getAllFiles(projectSources, /\.js$/).forEach(jsFile => {
+    Utils.getAllFiles(projectSources, /\.js$/, /node_modules/).forEach(jsFile => {
       Utils.extractComments(jsFile).forEach(comment => {
         if (!(annotation in comment.keys)) { return; }
         let key = comment.keys[annotation];

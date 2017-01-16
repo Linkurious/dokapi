@@ -28,14 +28,21 @@ class Utils {
    *
    * @param {string} dir
    * @param {RegExp} regexp
+   * @param {RegExp} [excluded]
    * @returns {Array<String>}
    */
-  static getAllFiles(dir, regexp) {
+  static getAllFiles(dir, regexp, excluded) {
     let files = [];
     const fileNames = fs.readdirSync(dir);
     for (let fileName of fileNames) {
       let filePath = path.resolve(dir, fileName);
-      let stat = fs.statSync(filePath);
+      if (excluded && excluded.test(filePath)) {
+        // ignore excluded file
+        continue;
+      }
+
+      // use "lstat" instead of "stat" to avoid following symlinks
+      let stat = fs.lstatSync(filePath);
       if (stat.isFile() && fileName.match(regexp)) {
         files.push(filePath);
       } else if (stat.isDirectory()) {
