@@ -205,6 +205,15 @@ class Utils {
       cb.apply(undefined, match.slice(1));
     }
   }
+
+  /**
+   * @param {string} filePath
+   * @returns {string}
+   */
+  static getExtension(filePath) {
+    const ext = path.extname(filePath);
+    return ext && ext.length ? ext.slice(1) : '';
+  }
 }
 
 module.exports = Utils;

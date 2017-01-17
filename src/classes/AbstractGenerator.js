@@ -218,6 +218,9 @@ class AbstractGenerator {
       'href="$1" class="current"'
     );
 
+    // removing zero-width spaces used as workaround in renderTemplate
+    htmlPage = htmlPage.replace(/\u200B/g, '');
+
     if (this.book.config.externalLinksToBlank) {
       // make external link open in a new tab
       htmlPage = htmlPage.replace(
@@ -414,10 +417,15 @@ class AbstractGenerator {
       if (this.book.isFileRef(referenceKey)) {
         const tag = referenceKey.startsWith('editfile:') ? 'textarea' : 'code';
         const filePath = this.book.getFileRefPath(templatePath, referenceKey);
-        const ext = path.extname(filePath);
-        value = '\n<' + tag + ' class="' + (ext && ext.length ? ext.substr(1) : '') + '">' + '\n' +
-          fs.readFileSync(filePath, {encoding: 'utf8'}) +
-          '\n</' + tag + '>\n';
+        const ext = Utils.getExtension(filePath);
+        let body = fs.readFileSync(filePath, {encoding: 'utf8'});
+        if (tag === 'code') {
+          value = '\n```' + ext + '\n' + body + '\n```\n';
+        } else {
+          // adding a zero-width space to prevent the markdown renderer from fucking up
+          body = body.replace(/\n/g, '\u200B\n');
+          value = '\n<' + tag + ' class="' + ext + '">' + '\n' + body + '\n</' + tag + '>\n';
+        }
 
       } else if (referenceKey in variableOverrides) {
         value = variableOverrides[referenceKey];
