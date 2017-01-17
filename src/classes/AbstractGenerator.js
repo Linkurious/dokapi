@@ -33,19 +33,24 @@ class AbstractGenerator {
 
     this._mainEntry = {name: book.config.name, key: '', content: book.config.description};
 
-    // index keys + set parent/prev/next/children
+    // index keys + set parent/prev/next
     this.entryKeys = new Set();
     let previousEntry = undefined;
     this.forEntries((entry, parentEntry) => {
+      this.entryKeys.add(entry.key);
+
       if (parentEntry) {
         entry.parent = parentEntry;
+        entry.hidden = entry.hidden || entry.parent.hidden;
       }
+
       if (previousEntry) {
         entry.previous = previousEntry;
         previousEntry.next = entry;
       }
-      this.entryKeys.add(entry.key);
-      previousEntry = entry;
+      if (!entry.hidden) {
+        previousEntry = entry;
+      }
     });
 
     // image references
@@ -101,7 +106,7 @@ class AbstractGenerator {
   }
 
   /**
-   * @param {function(Entry, Entry?)} cb
+   * @param {function(DokapiEntry, DokapiEntry?)} cb
    */
   forEntries(cb) {
     // main entry
@@ -173,7 +178,7 @@ class AbstractGenerator {
   }
 
   /**
-   * @param {Entry} entry relative path of a markdown content file
+   * @param {DokapiEntry} entry relative path of a markdown content file
    */
   generateHtml(entry) {
 
@@ -252,7 +257,7 @@ class AbstractGenerator {
 
   /**
    * @abstract
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    * @param {RenderContext} context
    * @returns {string}
    */
@@ -276,13 +281,14 @@ class AbstractGenerator {
   /**
    * Generate variables that are specific to a given entry
    *
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    * @returns {object} variable overrides for the markdown generator
    */
   $makeEntryVariables(entry) {
     const vars = {
       'entry.key': entry.key,
-      'entry.title': entry.parent ? `${entry.parent.name}: ${entry.name}` : entry.name
+      'entry.title': entry.parent ? `${entry.parent.name}: ${entry.name}` : entry.name,
+      'entry.root.path': this.pathToRoot(entry)
     };
 
     if (entry.children) {
@@ -344,7 +350,7 @@ class AbstractGenerator {
   }
 
   /**
-   * @param {Entry[]} entryChildren
+   * @param {DokapiEntry[]} entryChildren
    * @return {string} a markdown list of sub-entries with links
    */
   makeMarkdownIndex(entryChildren) {
@@ -356,7 +362,7 @@ class AbstractGenerator {
 
   //noinspection JSMethodCanBeStatic
   /**
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    * @returns {string}
    */
   pathToRoot(entry) {

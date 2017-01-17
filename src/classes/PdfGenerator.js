@@ -53,7 +53,12 @@ class PdfGenerator extends AbstractGenerator {
       )
     );
 
-    this.forEntries(entry => { appendHtml(this.generateHtml(entry)); });
+    this.forEntries((entry) => {
+      // don't print hidden entries
+      if (entry.hidden) { return; }
+
+      appendHtml(this.generateHtml(entry));
+    });
 
     // html template (suffix)
     appendHtml(
@@ -83,7 +88,7 @@ class PdfGenerator extends AbstractGenerator {
   }
 
   /**
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    * @param {RenderContext} context
    * @returns {string}
    */
@@ -92,7 +97,7 @@ class PdfGenerator extends AbstractGenerator {
   }
 
   /**
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    * @returns {string}
    */
   pathToRoot(entry) {

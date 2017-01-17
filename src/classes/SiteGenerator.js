@@ -50,7 +50,7 @@ class SiteGenerator extends AbstractGenerator {
 
   /**
    * @param {string} targetPath
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    */
   generateHtmlFile(targetPath, entry) {
     fs.writeFileSync(
@@ -60,7 +60,7 @@ class SiteGenerator extends AbstractGenerator {
   }
 
   /**
-   * @param {Entry} entry
+   * @param {DokapiEntry} entry
    * @param {RenderContext} context
    * @returns {string}
    */

@@ -7,13 +7,14 @@ const SiteGenerator = require('./SiteGenerator');
 const PdfGenerator = require('./PdfGenerator');
 
 /**
- * @typedef {object} Entry
+ * @typedef {object} DokapiEntry
  * @property {string} key Entry key
  * @property {string} name Entry name
+ * @property {boolean|undefined} hidden Whether this entry is hidden (not show in menu and single-page)
  * @property {string} content Markdown file path
- * @property {Entry|undefined} parent Parent entry (if any)
- * @property {Entry|undefined} next Next entry (if any)
- * @property {Entry|undefined} previous Previous entry (if any)
+ * @property {DokapiEntry|undefined} parent Parent entry (if any)
+ * @property {DokapiEntry|undefined} next Next entry (if any)
+ * @property {DokapiEntry|undefined} previous Previous entry (if any)
  * @property {Array<Entry>|undefined} children Sub-entries
  */
 
@@ -46,7 +47,7 @@ class DokapiBook {
    * @param {string} config.previousLink
    * @param {string} config.nextLink
    * @param {string} config.description
-   * @param {Entry[]} config.index
+   * @param {DokapiEntry[]} config.index
    * @param {Object<String>} config.variables
    * @param {string[]} referencedContent
    * @param {object} [options]
@@ -57,7 +58,7 @@ class DokapiBook {
 
     this.config = config;
     if (!this.config.previousLink) { this.config.previousLink = 'Previous'; }
-    if (!this.config.nextLink) { this.config.previousLink = 'Next'; }
+    if (!this.config.nextLink) { this.config.nextLink = 'Next'; }
 
     /** @type {string[]} */
     this.referencedContent = referencedContent;
@@ -377,12 +378,13 @@ class DokapiBook {
   /**
    * @param {string} indent The indentation level
    * @param {string} bullet '-' or '1.'
-   * @param {Array<Entry>} entries
+   * @param {DokapiEntry[]} entries
    * @returns {string} html
    * @private
    */
   __generateMarkdownMenu(indent, bullet, entries) {
     return entries.reduce((menu, entry) => {
+      if (entry.hidden) { return menu; }
       return menu + indent + `${bullet} [${entry.name}](/${entry.key})\n` +
         (entry.children ? this.__generateMarkdownMenu(indent + '   ', bullet, entry.children) : '');
     }, '');

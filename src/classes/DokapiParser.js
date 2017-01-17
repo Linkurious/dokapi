@@ -72,6 +72,7 @@ class DokapiParser {
           properties: {
             name: {required: true, type: 'string'},
             key: {required: false, type: 'string'},
+            hidden: {required: false, type: 'boolean'},
             content: {requiredUnless: 'children', check: checkFilePath},
             children: {required: false, arrayItem: {
               properties: {
