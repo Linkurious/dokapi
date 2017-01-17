@@ -11,7 +11,9 @@ const PdfGenerator = require('./PdfGenerator');
  * @property {string} key Entry key
  * @property {string} name Entry name
  * @property {string} content Markdown file path
- * @property {Entry|undefined} parent the parent entry
+ * @property {Entry|undefined} parent Parent entry (if any)
+ * @property {Entry|undefined} next Next entry (if any)
+ * @property {Entry|undefined} previous Previous entry (if any)
  * @property {Array<Entry>|undefined} children Sub-entries
  */
 
@@ -41,6 +43,8 @@ class DokapiBook {
    * @param {boolean} [config.externalLinksToBlank]
    * @param {string} config.siteTemplate HTML template file for site output
    * @param {string} config.pageTemplate HTML template file for page output
+   * @param {string} config.previousLink
+   * @param {string} config.nextLink
    * @param {string} config.description
    * @param {Entry[]} config.index
    * @param {Object<String>} config.variables
@@ -50,7 +54,11 @@ class DokapiBook {
    */
   constructor(rootDir, config, referencedContent, options) {
     this.rootDir = rootDir;
+
     this.config = config;
+    if (!this.config.previousLink) { this.config.previousLink = 'Previous'; }
+    if (!this.config.nextLink) { this.config.previousLink = 'Next'; }
+
     /** @type {string[]} */
     this.referencedContent = referencedContent;
     this.options = Utils.defaults(options, {annotation: 'dokapi'});

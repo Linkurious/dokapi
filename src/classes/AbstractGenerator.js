@@ -31,13 +31,21 @@ class AbstractGenerator {
     this.projectSources = projectSources;
     this.htmlTemplateBody = htmlTemplateBody;
 
-    // index entry keys + set entry parents
+    this._mainEntry = {name: book.config.name, key: '', content: book.config.description};
+
+    // index keys + set parent/prev/next/children
     this.entryKeys = new Set();
+    let previousEntry = undefined;
     this.forEntries((entry, parentEntry) => {
       if (parentEntry) {
         entry.parent = parentEntry;
       }
+      if (previousEntry) {
+        entry.previous = previousEntry;
+        previousEntry.next = entry;
+      }
       this.entryKeys.add(entry.key);
+      previousEntry = entry;
     });
 
     // image references
@@ -96,6 +104,10 @@ class AbstractGenerator {
    * @param {function(Entry, Entry?)} cb
    */
   forEntries(cb) {
+    // main entry
+    cb(this._mainEntry);
+
+    // actual entries
     this.book.config.index.forEach(entry => {
       cb(entry);
       if (!entry.children) { return; }
@@ -103,13 +115,6 @@ class AbstractGenerator {
         cb(subEntry, entry);
       });
     });
-  }
-
-  /**
-   * @returns {Entry}
-   */
-  getMainEntry() {
-    return {name: this.book.config.name, key: '', content: this.book.config.description};
   }
 
   /**
@@ -162,7 +167,6 @@ class AbstractGenerator {
       }
     };
 
-    extractImageReferences(this.getMainEntry());
     this.forEntries(entry => extractImageReferences(entry));
 
     return referencesByPath;
@@ -284,6 +288,16 @@ class AbstractGenerator {
     if (entry.children) {
       vars['entry.menu'] = this.makeMarkdownIndex(entry.children);
     }
+
+    const prev = this.book.config.previousLink;
+    vars['entry.previous'] = entry.previous
+      ? `<a class="previous" href="${this.pathToRoot(entry)}/${entry.previous.key}">${prev}</a>`
+      : `<a class="previous disabledLink" href="#">${prev}</a>`;
+
+    const next = this.book.config.nextLink;
+    vars['entry.next'] = entry.next
+      ? `<a class="next" href="${this.pathToRoot(entry)}/${entry.next.key}">${next}</a>`
+      : `<a class="next disabledLink" href="#">${next}</a>`;
 
     return vars;
   }

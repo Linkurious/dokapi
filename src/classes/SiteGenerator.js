@@ -26,15 +26,17 @@ class SiteGenerator extends AbstractGenerator {
    */
   $generate() {
     this.log('Generating HTML content from Markdown templates...');
-    this.generateHtmlFile(
-      this.target,
-      this.getMainEntry()
-    );
 
     this.forEntries(entry => {
-      // make entry dir + file
-      let entryTargetPath = path.resolve(this.target, entry.key);
-      fs.emptyDirSync(entryTargetPath);
+      let entryTargetPath;
+      if (!entry.key) {
+        // main entry is created in target folder directly
+        entryTargetPath = this.target;
+      } else {
+        // make entry dir + file
+        entryTargetPath = path.resolve(this.target, entry.key);
+        fs.emptyDirSync(entryTargetPath);
+      }
       this.generateHtmlFile(entryTargetPath, entry);
     });
 

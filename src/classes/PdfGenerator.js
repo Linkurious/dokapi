@@ -53,10 +53,6 @@ class PdfGenerator extends AbstractGenerator {
       )
     );
 
-    appendHtml(this.generateHtml(
-      {name: this.book.config.name, content: this.book.config.description, key: ''}
-    ));
-
     this.forEntries(entry => { appendHtml(this.generateHtml(entry)); });
 
     // html template (suffix)
