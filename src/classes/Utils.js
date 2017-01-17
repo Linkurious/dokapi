@@ -6,6 +6,8 @@ const child = require('child_process');
 const _defaults = require('lodash.defaults');
 const marky = require('marky-markdown');
 const Valcheck = require('valcheck');
+/** @type {function(Array, Array): Array} */
+const _difference = require('lodash.difference');
 
 /**
  * @type Valcheck
@@ -16,10 +18,11 @@ const checker = new Valcheck(error => {
   throw new Error('Library usage error: ' + bug);
 });
 
-/** @type {function(Array, Array): Array} */
-const _difference = require('lodash.difference');
-
 const COMMENT_KEY_RE = /^@(\S+)(?:\s+(.+))?$/;
+
+const MUSTACHE_REFERENCE_RE = /\{\{([^}]+?)}}/g;
+
+const MUSTACHE_REFERENCE_VALID = /^(?:file:|editfile:)?[a-z0-9.]+$/;
 
 class Utils {
 
@@ -123,10 +126,16 @@ class Utils {
    * @param {function(string)} callback called for each Moustache reference
    */
   static forReferences(body, callback) {
-    const blockRefRe = /\{\{((?:file:|editfile:)?[a-z0-9.]+)}}/g;
+    MUSTACHE_REFERENCE_RE.lastIndex = 0;
     let match;
-    while ((match = blockRefRe.exec(body)) !== null) {
-      callback(match[1]);
+    while ((match = MUSTACHE_REFERENCE_RE.exec(body)) !== null) {
+      let ref = match[1];
+      if (!ref.match(MUSTACHE_REFERENCE_VALID)) {
+        throw new ReferenceError(
+          `Invalid reference format: "${ref}", must match ${MUSTACHE_REFERENCE_VALID}.`
+        );
+      }
+      callback(ref);
     }
   }
 
