@@ -3,6 +3,7 @@
 
 const Utils = require('./classes/Utils');
 const DokapiParser = require('./classes/DokapiParser');
+const DEBUG = process.env.DEBUG === 'true';
 
 class Dokapi {
 
@@ -36,7 +37,7 @@ class Dokapi {
 
   printError(error, printStack) {
     this.$logError('\x1b[31m' + error.message + '\x1b[0m');
-    if (printStack) {
+    if (printStack || DEBUG) {
       this.$logError('\x1b[214m' + error.stack + '\x1b[0m');
     }
   }

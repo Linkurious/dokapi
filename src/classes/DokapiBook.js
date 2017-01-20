@@ -15,7 +15,7 @@ const PdfGenerator = require('./PdfGenerator');
  * @property {DokapiEntry|undefined} parent Parent entry (if any)
  * @property {DokapiEntry|undefined} next Next entry (if any)
  * @property {DokapiEntry|undefined} previous Previous entry (if any)
- * @property {Array<Entry>|undefined} children Sub-entries
+ * @property {DokapiEntry[]|undefined} children Sub-entries
  */
 
 /**
@@ -46,7 +46,9 @@ class DokapiBook {
    * @param {string} config.pageTemplate HTML template file for page output
    * @param {string} config.previousLink
    * @param {string} config.nextLink
-   * @param {string} config.description
+   * @param {object} config.main
+   * @param {string} config.main.content path to main-entry MD file
+   * @param {string} [config.main.name="Introduction"] name of the main-entry
    * @param {DokapiEntry[]} config.index
    * @param {Object<String>} config.variables
    * @param {string[]} referencedContent
@@ -57,6 +59,7 @@ class DokapiBook {
     this.rootDir = rootDir;
 
     this.config = config;
+    if (!this.config.main.name) { this.config.main.name = 'Introduction'; }
     if (!this.config.previousLink) { this.config.previousLink = 'Previous'; }
     if (!this.config.nextLink) { this.config.nextLink = 'Next'; }
 
@@ -372,7 +375,9 @@ class DokapiBook {
   _generateMarkdownMainMenu() {
     //this.log(`Generating main menu...`);
     const bullet = this.config.numbering ? '1.' : '-';
-    return `${bullet} [Home](/)\n${this.__generateMarkdownMenu('', bullet, this.config.index)}`;
+    return `${bullet} [${this.config.main.name}](/)\n${
+      this.__generateMarkdownMenu('', bullet, this.config.index)
+    }`;
   }
 
   /**

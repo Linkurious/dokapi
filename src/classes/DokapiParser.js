@@ -57,7 +57,13 @@ class DokapiParser {
     Utils.check.properties('book', book, {
       name: {required: true, type: 'string'},
       project: {required: false, check: 'nonEmpty'},
-      description: {required: true, check: checkFilePath},
+      main: {
+        required: true,
+        properties: {
+          content: {required: true, check: checkFilePath},
+          name: {required: false, check: 'nonEmpty'}
+        }
+      },
       variables: {required: true, type: 'object'},
       siteTemplate: {required: true, check: ['file', rootPath]},
       pageTemplate: {required: true, check: ['file', rootPath]},

@@ -31,7 +31,7 @@ class AbstractGenerator {
     this.projectSources = projectSources;
     this.htmlTemplateBody = htmlTemplateBody;
 
-    this._mainEntry = {name: book.config.name, key: '', content: book.config.description};
+    this._mainEntry = {name: book.config.name, key: '', content: book.config.main.content};
 
     // index keys + set parent/prev/next
     this.entryKeys = new Set();
