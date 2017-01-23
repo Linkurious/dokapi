@@ -25,7 +25,7 @@ Options:
 - Uses [marky-markdown](https://github.com/npm/marky-markdown#what-it-does) to emulate Github-style markdown rendering;
 - Code-coloring down with [Highlights](https://www.npmjs.com/package/highlights), enables easy CSS customization;
 - Generate *multi-page* or *single-page* site with the same content;
-- [Inject code files in your markdown](injecting-code-files-in-your-markdown-content) with `{{file:my_file.js}}`or `{{editfile:other_file.sh}}`;
+- [Inject code files in your markdown](#injecting-code-files-in-your-markdown-content) with `{{file:my_file.js}}`or `{{editfile:other_file.sh}}`;
 - [Sanity checks](#sanity-checks) everywhere (never have a broken link of missing image in your site);
 - [Watcher to dynamically re-generate your site when your content changed](#input-watcher);
 
@@ -129,7 +129,7 @@ This API is awesome.
 
 ### Special variables
 
-Some variables are automatically defined:
+Automatically defined variables:
 
 - `entry.key`: Key of the current entry (as defined in JSON file);
 - `entry.title`: Title of the current entry (as defined in JSON file);
@@ -141,11 +141,11 @@ With `type = "site"`:
 - `entry.previous`: HTML link to previous entry (text can be set using `config.previousLink`);
 - `entry.next`: HTML link to next entry (text can be set using `config.nextLink`);
 - `entry.html.body`: (in HTML template only), HTML of current entry;
-- `menu`: (in HTML template only), HTML of current menu;
+- `menu`: (in HTML template only) HTML of current menu;
 
 With `type = "page"`:
 
-- `body`: In HTML `"page"` template only, HTML for all combined entries;
+- `body`: (in HTML template only) HTML for all combined entries;
 
 If you reference a code project, the following variables will be extracted from `package.json`:
 
