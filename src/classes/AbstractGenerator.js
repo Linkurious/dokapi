@@ -435,17 +435,8 @@ class AbstractGenerator {
       let value;
 
       if (this.book.isFileRef(referenceKey)) {
-        const tag = referenceKey.startsWith('editfile:') ? 'textarea' : 'code';
         const filePath = this.book.getFileRefPath(templatePath, referenceKey);
-        const ext = Utils.getExtension(filePath);
-        let body = fs.readFileSync(filePath, {encoding: 'utf8'});
-        if (tag === 'code') {
-          value = '\n```' + ext + '\n' + body + '\n```\n';
-        } else {
-          // adding a zero-width space to prevent the markdown renderer from fucking up
-          body = body.replace(/\n/g, '\u200B\n');
-          value = '\n<' + tag + ' class="' + ext + '">' + '\n' + body + '\n</' + tag + '>\n';
-        }
+        value = this._getFileRefValue(referenceKey, filePath, variableOverrides, context);
 
       } else if (referenceKey in variableOverrides) {
         value = variableOverrides[referenceKey];
@@ -465,6 +456,31 @@ class AbstractGenerator {
     return body;
   }
 
+  /**
+   * @param {string} referenceKey
+   * @param {string} filePath
+   * @param {object} variableOverrides
+   * @param {RenderContext} context
+   * @returns {string}
+   * @private
+   */
+  _getFileRefValue(referenceKey, filePath, variableOverrides, context) {
+    const tag = referenceKey.startsWith('editfile:') ? 'textarea' : 'code';
+    const ext = Utils.getExtension(filePath);
+
+    let fileBody = fs.readFileSync(filePath, {encoding: 'utf8'});
+
+    // render references in file body
+    fileBody = this.renderTemplate(filePath, fileBody, variableOverrides, context);
+
+    if (tag === 'code') {
+      return '\n```' + ext + '\n' + fileBody + '\n```\n';
+    } else {
+      // adding a zero-width space to prevent the markdown renderer from fucking up
+      fileBody = fileBody.replace(/\n/g, '\u200B\n');
+      return '\n<' + tag + ' class="' + ext + '">' + '\n' + fileBody + '\n</' + tag + '>\n';
+    }
+  }
 }
 
 module.exports = AbstractGenerator;
