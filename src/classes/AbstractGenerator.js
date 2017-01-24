@@ -214,7 +214,7 @@ class AbstractGenerator {
     let htmlPage = this.fixLinksRoot(this.htmlTemplateBody, this.pathToRoot(entry));
 
     // render HTML template
-    htmlPage = this.renderTemplate(
+    htmlPage = this.resolveVariables(
       mdPath, // todo: should be the path to the html template
       htmlPage,
       entryVarOverrides,
@@ -227,7 +227,7 @@ class AbstractGenerator {
       'href="$1" class="current"'
     );
 
-    // removing zero-width spaces used as workaround in renderTemplate
+    // removing zero-width spaces used as workaround in resolveVariables
     htmlPage = htmlPage.replace(/\u200B/g, '');
 
     if (this.book.config.externalLinksToBlank) {
@@ -382,7 +382,7 @@ class AbstractGenerator {
     } catch(e) {
       throw new Error('Could not read file "' + mdPath + '": ' + e.message);
     }
-    return this.renderTemplate(
+    return this.resolveVariables(
       mdPath,
       mdTemplate,
       variableOverrides,
@@ -421,21 +421,20 @@ class AbstractGenerator {
   }
 
   /**
-   * @param {string} templatePath
-   * @param {string} body The template body
+   * @param {string} contentPath
+   * @param {string} contentBody The template body
    * @param {Object<String>} [variableOverrides={}]
    * @param {RenderContext} context
    * @param {boolean} [renderMarkdown=false]
    * @returns {*}
    */
-  renderTemplate(templatePath, body, variableOverrides, context, renderMarkdown) {
+  resolveVariables(contentPath, contentBody, variableOverrides, context, renderMarkdown) {
     if (!variableOverrides) { variableOverrides = {}; }
-
-    Utils.forReferences(body, referenceKey => {
+    Utils.forReferences(contentBody, referenceKey => {
       let value;
 
       if (this.book.isFileRef(referenceKey)) {
-        const filePath = this.book.getFileRefPath(templatePath, referenceKey);
+        const filePath = this.book.getFileRefPath(contentPath, referenceKey);
         value = this._getFileRefValue(referenceKey, filePath, variableOverrides, context);
 
       } else if (referenceKey in variableOverrides) {
@@ -446,14 +445,14 @@ class AbstractGenerator {
           : this.variables.get(referenceKey).text;
       } else {
         throw new ReferenceError(
-          `Variable reference "${referenceKey}" could not be resolved in "${templatePath}".`
+          `Variable reference "${referenceKey}" could not be resolved in "${contentPath}".`
         );
       }
 
-      body = body.replace(new RegExp('\\{\\{' + referenceKey + '}}', 'g'), value);
+      contentBody = contentBody.replace(new RegExp('\\{\\{' + referenceKey + '}}', 'g'), value);
     });
 
-    return body;
+    return contentBody;
   }
 
   /**
@@ -471,7 +470,7 @@ class AbstractGenerator {
     let fileBody = fs.readFileSync(filePath, {encoding: 'utf8'});
 
     // render references in file body
-    fileBody = this.renderTemplate(filePath, fileBody, variableOverrides, context);
+    fileBody = this.resolveVariables(filePath, fileBody, variableOverrides, context, false);
 
     if (tag === 'code') {
       return '\n```' + ext + '\n' + fileBody + '\n```\n';

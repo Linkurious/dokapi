@@ -48,7 +48,7 @@ class PdfGenerator extends AbstractGenerator {
     // html template (prefix)
     appendHtml(
       this.fixLinksRoot(
-        this.renderTemplate(htmlTemplatePath, templateParts[0], {}, context),
+        this.resolveVariables(htmlTemplatePath, templateParts[0], {}, context),
         '.'
       )
     );
@@ -63,7 +63,7 @@ class PdfGenerator extends AbstractGenerator {
     // html template (suffix)
     appendHtml(
       this.fixLinksRoot(
-        this.renderTemplate(htmlTemplatePath, templateParts[1], {}, context),
+        this.resolveVariables(htmlTemplatePath, templateParts[1], {}, context),
         '.'
       )
     );

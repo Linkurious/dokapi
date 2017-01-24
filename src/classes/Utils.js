@@ -126,9 +126,9 @@ class Utils {
    * @param {function(string)} callback called for each Moustache reference
    */
   static forReferences(body, callback) {
-    MUSTACHE_REFERENCE_RE.lastIndex = 0;
+    const referenceRe = new RegExp(MUSTACHE_REFERENCE_RE.source, 'g');
     let match;
-    while ((match = MUSTACHE_REFERENCE_RE.exec(body)) !== null) {
+    while ((match = referenceRe.exec(body)) !== null) {
       let ref = match[1];
       if (!ref.match(MUSTACHE_REFERENCE_VALID)) {
         throw new ReferenceError(
