@@ -100,16 +100,23 @@ class Dokapi {
     book.log(`Generated in ${((Date.now() - t) / 1000).toFixed(2)}s :)`);
   }
 
-  run() {
+  /**
+   * @param {function} [cb]
+   */
+  run(cb) {
     this.printInfo('Dokapi generator:');
     for (let k of ['input', 'output', 'outputType', 'watch', 'createMissing', 'refreshProject']) {
       this.printInfo(' - ' + k + ': ' + this.options[k]);
     }
 
     if (this.options.watch) {
-      this.$watch(this.options.input, () => this.$generate());
+      this.$watch(this.options.input, () => {
+        this.$generate();
+        if (cb) { setTimeout(cb, 0); }
+      });
     } else {
       this.$generate();
+      if (cb) { setTimeout(cb, 0); }
     }
   }
 }

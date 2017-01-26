@@ -252,6 +252,17 @@ class DokapiBook {
           {key: varKey, text: packageInfo[key], builtin: true, markdown: false, file: packagePath}
         );
       }
+
+      variables.set(
+        'config.name',
+        {
+          key: 'config.name',
+          text: this.config.name,
+          builtin: true,
+          markdown: false,
+          file: path.resolve(this.rootDir, DokapiBook.CONFIG_FILE)
+        }
+      );
     }
 
     // loading builtin variables

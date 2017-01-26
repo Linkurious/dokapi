@@ -105,6 +105,9 @@ class PdfGenerator extends AbstractGenerator {
   }
 
   generateHtml(entry) {
+    // skip empty entries in page mode
+    if (!entry.content) { return ''; }
+
     const html = super.generateHtml(entry);
     // - fix title anchors
     // - will not break page anchors: they already contain "__" at the end and will not match
