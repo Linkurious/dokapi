@@ -38,6 +38,7 @@ class DokapiBook {
    * @param {string} rootDir
    * @param {Object} config
    * @param {string} config.project
+   * @param {boolean} [config.skipProjectVariables=false]
    * @param {string} config.name
    * @param {string} config.assets
    * @param {boolean} [config.numbering]
@@ -227,17 +228,20 @@ class DokapiBook {
     if (this.projectType === 'none') {
       this.log('Skipping code variable extraction (no code project).');
     } else {
-      this.log(`Extracting @${annotation} variable from project code...`);
-      Utils.getAllFiles(projectSources, /\.js$/, /node_modules/).forEach(jsFile => {
-        Utils.extractComments(jsFile).forEach(comment => {
-          if (!(annotation in comment.keys)) {
-            return;
-          }
-          let key = comment.keys[annotation];
-          let text = comment.lines.join('\n');
-          variables.set(key, {text: text, key: key, file: jsFile, markdown: true});
+
+      if (!this.config.skipProjectVariables) {
+        this.log(`Extracting @${annotation} variable from project code...`);
+        Utils.getAllFiles(projectSources, /\.js$/, /node_modules/).forEach(jsFile => {
+          Utils.extractComments(jsFile).forEach(comment => {
+            if (!(annotation in comment.keys)) {
+              return;
+            }
+            let key = comment.keys[annotation];
+            let text = comment.lines.join('\n');
+            variables.set(key, {text: text, key: key, file: jsFile, markdown: true});
+          });
         });
-      });
+      }
 
       // extract package.json string variables
       const packagePath = path.resolve(projectSources, 'package.json');

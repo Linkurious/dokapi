@@ -57,6 +57,7 @@ class DokapiParser {
     Utils.check.properties('book', book, {
       name: {required: true, type: 'string'},
       project: {required: false, check: 'nonEmpty'},
+      skipProjectVariables: {required: false, type: 'boolean'},
       main: {
         required: true,
         properties: {

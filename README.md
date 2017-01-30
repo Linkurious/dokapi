@@ -77,6 +77,7 @@ Example:
 - `nextLink` (*default*: `"Next"`): Text used in link to next entry (when `type = "site"`) ;
 - `main.name` (*default*: `"Introduction"`): Name of main entry in site-menu;
 - `project`: GitHub-style URL or relative path to source-code project;
+- `skipProjectVariables`: (*default:* `false`): Prevent project variables (in `@dokapi` comments) from being extracted;
 - `numbering`: Whether to use ordered (`<ol>`) or unordered (`<ul>`) tags when generating the site-menu;
 - `externalLinksToBlank`: Whether to open external links in a new tab;
 - `index`: Content structure
