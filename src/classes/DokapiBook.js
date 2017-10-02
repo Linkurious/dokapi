@@ -289,6 +289,23 @@ class DokapiBook {
       file: DokapiBook.CONFIG_FILE
     });
 
+    // resolve variables inside variables (once)
+    variables.forEach(v => {
+      Utils.forReferences(v.text, referenceKey => {
+        if (variables.has(referenceKey)) {
+
+          console.log('BEFORE: ' + v.text);
+
+          v.text = v.text.replace(
+            new RegExp('\\{\\{' + referenceKey + '}}', 'g'),
+            variables.get(referenceKey).text
+          );
+
+          console.log('AFTER: ' + v .text);
+        }
+      });
+    });
+
     return variables;
   }
 

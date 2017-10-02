@@ -440,7 +440,7 @@ class AbstractGenerator {
       } else if (referenceKey in variableOverrides) {
         value = variableOverrides[referenceKey];
       } else if (this.variables.has(referenceKey)) {
-        value = this.variables.get(referenceKey).markdown && renderMarkdown
+        value = (this.variables.get(referenceKey).markdown && renderMarkdown)
           ? this.renderMarkdown(this.variables.get(referenceKey).text, context)
           : this.variables.get(referenceKey).text;
       } else {
