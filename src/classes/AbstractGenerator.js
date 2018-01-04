@@ -231,6 +231,8 @@ class AbstractGenerator {
     htmlPage = htmlPage.replace(/\u200B/g, '');
 
     if (this.book.config.externalLinksToBlank) {
+      // see https://www.jitbit.com/alexblog/256-targetblank-vulnerability/
+
       // make external link open in a new tab
       htmlPage = htmlPage.replace(
         /(href=["']https?:\/\/)/ig,
