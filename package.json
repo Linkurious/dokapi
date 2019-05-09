@@ -16,7 +16,7 @@
     "okapi"
   ],
   "engines": {
-    "node": "4.6.0"
+    "node": "8.16.0"
   },
   "version": "1.0.21",
   "private": false,
@@ -43,7 +43,8 @@
   "scripts": {
     "//": "invoked using >npm run [script-name]",
     "lint": "eslint ./src",
-    "patch": "npm version patch && git push && npm publish"
+    "patch": "npm version patch && git push && npm publish",
+    "test": "mocha test/**/*.spec.js"
   },
   "dependencies": {
     "bluebird": "latest",
@@ -58,11 +59,11 @@
   },
   "devDependencies": {
     "eslint": "3.9.1",
-    "eslint-plugin-import-order": "^2.1.4",
+    "eslint-plugin-import-order": "2.1.4",
     "ink-docstrap": "1.1.0",
-    "istanbul": "~1.1.0-alpha.1",
+    "istanbul": "1.1.0-alpha.1",
     "jsdoc": "3.4.1",
-    "mocha": "3.0.2",
-    "should": "11.1.0"
+    "mocha": "6.1.4",
+    "should": "13.2.3"
   }
 }

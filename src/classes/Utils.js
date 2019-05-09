@@ -20,7 +20,7 @@ const checker = new Valcheck(error => {
 
 const COMMENT_KEY_RE = /^@(\S+)(?:\s+(.+))?$/;
 
-const MUSTACHE_REFERENCE_RE = /\{\{([^}]+?)}}/g;
+const MUSTACHE_REFERENCE_RE = /(.|^){{([^}]+?)}}/g;
 
 const MUSTACHE_REFERENCE_VALID = /^(?:file:|editfile:)?[a-z0-9.]+$/;
 
@@ -129,7 +129,12 @@ class Utils {
     const referenceRe = new RegExp(MUSTACHE_REFERENCE_RE.source, 'g');
     let match;
     while ((match = referenceRe.exec(body)) !== null) {
-      let ref = match[1];
+      let before = match[1];
+      if (before === '\\') {
+        continue;
+      }
+
+      let ref = match[2];
       if (!ref.match(MUSTACHE_REFERENCE_VALID)) {
         throw new ReferenceError(
           `Invalid reference format: "${ref}", must match ${MUSTACHE_REFERENCE_VALID}.`
@@ -149,10 +154,10 @@ class Utils {
     markdown = markdown.replace(/```JS(?:ON)?\n/ig, '```js\n');
 
     return marky(markdown, {
-      sanitize: false,            // remove script tags and stuff
+      sanitize: false,           // remove script tags and stuff
       linkify: true,             // turn orphan URLs into hyperlinks
       highlightSyntax: true,     // run highlights on fenced code blocks
-      prefixHeadingIds: false,    // prevent DOM id collisions
+      prefixHeadingIds: false,   // prevent DOM id collisions
       serveImagesWithCDN: false, // use npm's CDN to proxy images over HTTPS
       debug: false,              // console.log() all the things
       package: null              // npm package metadata
