@@ -436,7 +436,7 @@ class AbstractGenerator {
       if (escaped) {
         // remove escape char
         contentBody = contentBody.replace(
-          new RegExp('\\\\{\\{' + referenceKey + '}}', 'g'),
+          '\\\\{\\{' + referenceKey + '}}',
           '{{' + referenceKey + '}}'
         );
         return;
