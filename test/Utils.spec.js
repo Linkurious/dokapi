@@ -29,6 +29,18 @@ describe('Utils.forReferences', () => {
     should(rs).be.deepEqual(['abc', 'def']);
   });
 
+  it('should find two consecutive refs', () => {
+    const rs = [];
+    Utils.forReferences('{{abc}}{{def}}', (r) => rs.push(r));
+    should(rs).be.deepEqual(['abc', 'def']);
+  });
+
+  it('should find two consecutive refs with line break', () => {
+    const rs = [];
+    Utils.forReferences('{{abc}}\n{{def}}', (r) => rs.push(r));
+    should(rs).be.deepEqual(['abc', 'def']);
+  });
+
   it('should ignore escaped refs', () => {
     const rs = [];
     Utils.forReferences('{{abc}} lol \\{{def}}', (r) => rs.push(r));

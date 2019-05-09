@@ -20,7 +20,7 @@ const checker = new Valcheck(error => {
 
 const COMMENT_KEY_RE = /^@(\S+)(?:\s+(.+))?$/;
 
-const MUSTACHE_REFERENCE_RE = /(.|^){{([^}]+?)}}/g;
+const MUSTACHE_REFERENCE_RE = /(.?){{([^}]+?)}}/g;
 
 const MUSTACHE_REFERENCE_VALID = /^(?:file:|editfile:)?[a-z0-9.]+$/;
 
