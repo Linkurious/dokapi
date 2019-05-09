@@ -123,24 +123,29 @@ class Utils {
 
   /**
    * @param {string} body
-   * @param {function(string)} callback called for each Moustache reference
+   * @param {function(string, boolean)} callback called for each Moustache reference
+   * @param {boolean} [escaped=false] get escaped references
    */
-  static forReferences(body, callback) {
+  static forReferences(body, callback, escaped) {
     const referenceRe = new RegExp(MUSTACHE_REFERENCE_RE.source, 'g');
     let match;
     while ((match = referenceRe.exec(body)) !== null) {
       let before = match[1];
+      let ref = match[2];
+
       if (before === '\\') {
+        if (escaped) {
+          callback(ref, true);
+        }
         continue;
       }
 
-      let ref = match[2];
       if (!ref.match(MUSTACHE_REFERENCE_VALID)) {
         throw new ReferenceError(
           `Invalid reference format: "${ref}", must match ${MUSTACHE_REFERENCE_VALID}.`
         );
       }
-      callback(ref);
+      callback(ref, false);
     }
   }
 

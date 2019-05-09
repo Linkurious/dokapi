@@ -294,14 +294,14 @@ class DokapiBook {
       Utils.forReferences(v.text, referenceKey => {
         if (variables.has(referenceKey)) {
 
-          console.log('BEFORE: ' + v.text);
+          //console.log('BEFORE: ' + v.text);
 
           v.text = v.text.replace(
             new RegExp('\\{\\{' + referenceKey + '}}', 'g'),
             variables.get(referenceKey).text
           );
 
-          console.log('AFTER: ' + v .text);
+          //console.log('AFTER: ' + v.text);
         }
       });
     });

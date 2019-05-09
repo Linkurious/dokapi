@@ -432,9 +432,17 @@ class AbstractGenerator {
    */
   resolveVariables(contentPath, contentBody, variableOverrides, context, renderMarkdown) {
     if (!variableOverrides) { variableOverrides = {}; }
-    Utils.forReferences(contentBody, referenceKey => {
-      let value;
+    Utils.forReferences(contentBody, (referenceKey, escaped) => {
+      if (escaped) {
+        // remove escape char
+        contentBody = contentBody.replace(
+          new RegExp('\\\\{\\{' + referenceKey + '}}', 'g'),
+          '{{' + referenceKey + '}}'
+        );
+        return;
+      }
 
+      let value;
       if (this.book.isFileRef(referenceKey)) {
         const filePath = this.book.getFileRefPath(contentPath, referenceKey);
         value = this._getFileRefValue(referenceKey, filePath, variableOverrides, context);
@@ -452,7 +460,7 @@ class AbstractGenerator {
       }
 
       contentBody = contentBody.replace(new RegExp('\\{\\{' + referenceKey + '}}', 'g'), value);
-    });
+    }, true);
 
     return contentBody;
   }
