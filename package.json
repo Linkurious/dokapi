@@ -1,5 +1,5 @@
 {
-  "name": "dokapi",
+  "name": "@linkurious/dokapi",
   "description": "A Markdown-based Website generator with advanced features",
   "keywords": [
     "documentation",
@@ -40,10 +40,14 @@
   "bin": {
     "dokapi": "src/dokapi.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "//": "invoked using >npm run [script-name]",
     "lint": "eslint ./src",
     "patch": "npm version patch && git push && npm publish",
+    "minor": "npm version minor && git push && npm publish",
     "test": "mocha test/**/*.spec.js"
   },
   "dependencies": {
