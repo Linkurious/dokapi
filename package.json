@@ -62,7 +62,7 @@
     "html-pdf": "2.1.0"
   },
   "devDependencies": {
-    "eslint": "3.9.1",
+    "eslint": "4.18.2",
     "eslint-plugin-import-order": "2.1.4",
     "ink-docstrap": "1.1.0",
     "istanbul": "1.1.0-alpha.1",
