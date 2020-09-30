@@ -16,7 +16,7 @@
     "okapi"
   ],
   "engines": {
-    "node": "8.16.0"
+    "node": "8.17.0"
   },
   "version": "1.1.1",
   "private": false,
@@ -51,8 +51,8 @@
     "test": "mocha test/**/*.spec.js"
   },
   "dependencies": {
-    "bluebird": "latest",
-    "fs-extra": "latest",
+    "bluebird": "3.7.2",
+    "fs-extra": "9.0.1",
     "valcheck": "1.0.4",
     "lodash.difference": "4.4.0",
     "lodash.defaults": "4.2.0",
