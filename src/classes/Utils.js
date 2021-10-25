@@ -27,7 +27,7 @@ const MUSTACHE_REFERENCE_RE = /(.?){{([^}]+?)}}/g;
 const MUSTACHE_REFERENCE_VALID = /^(?:file:|editfile:)?[a-z0-9.]+$/;
 
 /**
- * Set up the markdown renderer
+ * Register the code highlighter for markdown renderer
  */
 hljs.registerLanguage('cypher', hljsCypher);
 marked.setOptions({
@@ -45,6 +45,12 @@ marked.setOptions({
     }
   }
 });
+
+/**
+ * Patch the markdown renderer to add anchor links next to H1/H2/H3/H4 headings
+ * This matches the github markdown renderer.
+ * changes <h1 id="bla">bla</h1> to <h1 id="bla"><a href="#bla"></a>bla</h1>
+ */
 const renderer = {
   heading(text, level) {
     const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
@@ -192,6 +198,8 @@ class Utils {
     // hack to fix code highlighting
     markdown = markdown.replace(/```JS(?:ON)?\n/ig, '```js\n');
 
+    // default options from "marked" match our needs
+    // see https://marked.js.org/using_advanced#options
     return marked(markdown);
   }
 
