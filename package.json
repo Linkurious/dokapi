@@ -16,9 +16,9 @@
     "okapi"
   ],
   "engines": {
-    "node": "8.17.0"
+    "node": "14.18.1"
   },
-  "version": "1.1.1",
+  "version": "2.0.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -51,15 +51,15 @@
     "test": "mocha test/**/*.spec.js"
   },
   "dependencies": {
-    "bluebird": "3.7.2",
-    "fs-extra": "9.0.1",
-    "valcheck": "1.0.4",
-    "lodash.difference": "4.4.0",
+    "fs-extra": "10.0.0",
+    "valcheck": "1.0.20",
+    "lodash.difference": "4.5.0",
     "lodash.defaults": "4.2.0",
-    "marky-markdown": "9.0.1",
-    "watch": "1.0.1",
-    "commander": "2.9.0",
-    "html-pdf": "2.1.0"
+    "marked": "3.0.7",
+    "watch": "1.0.2",
+    "commander": "2.20.3",
+    "highlight.js": "11.3.1",
+    "highlightjs-cypher": "1.1.1"
   },
   "devDependencies": {
     "eslint": "3.9.1",

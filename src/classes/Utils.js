@@ -4,8 +4,10 @@ const fs = require('fs-extra');
 const path = require('path');
 const child = require('child_process');
 const _defaults = require('lodash.defaults');
-const marky = require('marky-markdown');
-const Valcheck = require('valcheck');
+const marked = require('marked');
+const hljs = require('highlight.js');
+const hljsCypher = require('highlightjs-cypher');
+const Valcheck = require('valcheck').default;
 /** @type {function(Array, Array): Array} */
 const _difference = require('lodash.difference');
 
@@ -23,6 +25,44 @@ const COMMENT_KEY_RE = /^@(\S+)(?:\s+(.+))?$/;
 const MUSTACHE_REFERENCE_RE = /(.?){{([^}]+?)}}/g;
 
 const MUSTACHE_REFERENCE_VALID = /^(?:file:|editfile:)?[a-z0-9.]+$/;
+
+/**
+ * Register the code highlighter for markdown renderer
+ */
+hljs.registerLanguage('cypher', hljsCypher);
+marked.setOptions({
+  highlight: function(code, lang, callback) {
+    try {
+      let result;
+      if (lang) {
+        result = hljs.highlight(code, {language: lang});
+      } else {
+        result = hljs.highlightAuto(code);
+      }
+      return result.value;
+    } catch(err) {
+      throw err;
+    }
+  }
+});
+
+/**
+ * Patch the markdown renderer to add anchor links next to H1/H2/H3/H4 headings
+ * This matches the github markdown renderer.
+ * changes <h1 id="bla">bla</h1> to <h1 id="bla"><a href="#bla"></a>bla</h1>
+ */
+const renderer = {
+  heading(text, level) {
+    const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+    return '<h' + level + ' class="header"><a aria-hidden="true" id="' +
+      escapedText +
+      '" class="deep-link" href="#' +
+      escapedText +
+      '"><span class="deep-link"></span></a>' +
+      text + '</h' + level + '>';
+  }
+};
+marked.use({ renderer });
 
 class Utils {
 
@@ -158,15 +198,9 @@ class Utils {
     // hack to fix code highlighting
     markdown = markdown.replace(/```JS(?:ON)?\n/ig, '```js\n');
 
-    return marky(markdown, {
-      sanitize: false,           // remove script tags and stuff
-      linkify: true,             // turn orphan URLs into hyperlinks
-      highlightSyntax: true,     // run highlights on fenced code blocks
-      prefixHeadingIds: false,   // prevent DOM id collisions
-      serveImagesWithCDN: false, // use npm's CDN to proxy images over HTTPS
-      debug: false,              // console.log() all the things
-      package: null              // npm package metadata
-    });
+    // default options from "marked" match our needs
+    // see https://marked.js.org/using_advanced#options
+    return marked(markdown);
   }
 
   /**

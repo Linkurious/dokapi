@@ -155,7 +155,6 @@ class DokapiBook {
    * @param {string} outputDir Output directory
    * @param {boolean} [forceDownloadProject=false]
    * @param {boolean} [createMissingMarkdown=false]
-   * @returns {Promise}
    */
   generate(outputType, outputDir, forceDownloadProject, createMissingMarkdown) {
     Utils.check.values('outputType', outputType, ['page', 'site'], true);
