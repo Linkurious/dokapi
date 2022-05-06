@@ -16,9 +16,9 @@
     "okapi"
   ],
   "engines": {
-    "node": "14.18.1"
+    "node": ">=14.0.0"
   },
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": false,
   "repository": {
     "type": "git",
@@ -51,20 +51,20 @@
     "test": "mocha test/**/*.spec.js"
   },
   "dependencies": {
-    "fs-extra": "10.0.0",
+    "fs-extra": "10.0.1",
     "valcheck": "1.0.20",
     "lodash.difference": "4.5.0",
     "lodash.defaults": "4.2.0",
-    "marked": "3.0.7",
+    "marked": "3.0.8",
     "watch": "1.0.2",
     "commander": "2.20.3",
     "highlight.js": "11.3.1",
-    "highlightjs-cypher": "1.1.1"
+    "highlightjs-cypher": "1.1.5"
   },
   "devDependencies": {
     "eslint": "3.9.1",
     "eslint-plugin-import-order": "2.1.4",
-    "ink-docstrap": "1.1.0",
+    "ink-docstrap": "1.1.4",
     "istanbul": "1.1.0-alpha.1",
     "jsdoc": "3.4.1",
     "mocha": "6.1.4",
