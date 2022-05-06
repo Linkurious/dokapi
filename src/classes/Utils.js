@@ -35,6 +35,7 @@ marked.setOptions({
     try {
       let result;
       if (lang) {
+        if (lang === 'sh') {lang = 'shell';}
         result = hljs.highlight(code, {language: lang});
       } else {
         result = hljs.highlightAuto(code);
