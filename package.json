@@ -55,7 +55,7 @@
     "valcheck": "1.0.20",
     "lodash.difference": "4.5.0",
     "lodash.defaults": "4.2.0",
-    "marked": "3.0.8",
+    "marked": "4.0.10",
     "watch": "1.0.2",
     "commander": "2.20.3",
     "highlight.js": "11.3.1",
