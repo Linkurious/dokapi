@@ -67,7 +67,7 @@
     "ink-docstrap": "1.1.4",
     "istanbul": "1.1.0-alpha.1",
     "jsdoc": "3.4.1",
-    "mocha": "6.1.4",
+    "mocha": "6.2.3",
     "should": "13.2.3"
   }
 }
