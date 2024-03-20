@@ -111,16 +111,25 @@ class PdfGenerator extends AbstractGenerator {
     // - fix title anchors
     // - will not break page anchors: they already contain "__" at the end and will not match
     return html.replace(
-      /<a id="([a-z0-9-]+)"\s(class="deep-link")\shref="#[a-z0-9-]+"/g,
-      '<a id="' + entry.key + '__$1" $2 href="#' + entry.key + '__$1"'
+      /<a (aria-hidden="[^"]+")\sid="([a-z0-9-]+)"\s+(class="deep-link")\shref="#[a-z0-9-]+"/g,
+      '<a $1 id="' + entry.key + '__$2" $3 href="#' + entry.key + '__$2"'
     );
   }
 
   fixMarkdownLinks(mdBody, context) {
     //var mbBody = super.fixMarkdownLinks(mdBody, context);
 
-    // fix internal links (make anchors)
-    mdBody = mdBody.replace(/([^!]\[[^\]]*?])\(\/([^)]+?)(?:\/#([^)]+?))?\)/ig, '$1(#$2__$3)');
+    // fix file-local internal links (make anchors)
+    mdBody = mdBody.replace(
+      /([^!]\[[^\]]*?])\((#([^)]+?))?\)/ig,
+      '$1(#' + context.currentKey + '__$3)'
+    );
+
+    // fix cross-file internal links (make anchors)
+    mdBody = mdBody.replace(
+      /([^!]\[[^\]]*?])\(\/([^)]+?)(?:\/#([^)]+?))?\)/ig,
+      '$1(#$2__$3)'
+    );
 
     // fix image links (relative to "images" folder)
     mdBody = mdBody.replace(
