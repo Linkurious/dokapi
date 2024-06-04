@@ -7,8 +7,8 @@ const DokapiBook = require('./DokapiBook');
 
 const LINK_MAILTO = /^mailto:[^\s]+$/ig;
 const LINK_ABSOLUTE = /^https?:\/\/[^\s]+$/ig;
-const LINK_RELATIVE = /^[.]{1,2}\/([a-z0-9-]*)(\/#[a-z0-9-]+)?$/ig;
-const LINK_HASH = /^#([a-zA-Z0-9=-]+)$/ig;
+const LINK_RELATIVE = /^[.]{1,2}\/([a-z0-9-]+)(\/#[a-z0-9-]+)?$/ig;
+const LINK_HASH = /^#([a-zA-Z0-9-]+)$/ig;
 
 /**
  * @typedef {object} RenderContext
@@ -299,12 +299,12 @@ class AbstractGenerator {
 
     const prev = this.book.config.previousLink;
     vars['entry.previous'] = entry.previous
-      ? `<a class="previous" href="${this.pathToRoot(entry)}/${entry.previous.key}">${prev}</a>`
+      ? `<a class="previous" href="${this.pathToRoot(entry)}/${entry.previous.key}/">${prev}</a>`
       : `<a class="previous disabledLink" href="#">${prev}</a>`;
 
     const next = this.book.config.nextLink;
     vars['entry.next'] = entry.next
-      ? `<a class="next" href="${this.pathToRoot(entry)}/${entry.next.key}">${next}</a>`
+      ? `<a class="next" href="${this.pathToRoot(entry)}/${entry.next.key}/">${next}</a>`
       : `<a class="next disabledLink" href="#">${next}</a>`;
 
     return vars;
@@ -328,10 +328,10 @@ class AbstractGenerator {
    * @returns {string}
    */
   fixMarkdownLinks(mdBody, context) {
-    // prefix links with path to root
+    // prefix links with path to root + add trailing "/"
     mdBody = mdBody.replace(
-      /([^!]\[[^\]]*])\(\/([a-z0-9/#-]*)\)/g,
-      `$1(${context.pathToRoot}/$2)`
+      /([^!]\[[^\]]*])\(\/([a-z0-9-]+)(?:\/(#[a-z0-9-]+)?)?\)/g,
+      `$1(${context.pathToRoot}/$2/$3)`
     );
 
     if (context.currentKey !== '') {
