@@ -7,7 +7,7 @@ const DokapiBook = require('./DokapiBook');
 
 const LINK_MAILTO = /^mailto:[^\s]+$/ig;
 const LINK_ABSOLUTE = /^https?:\/\/[^\s]+$/ig;
-const LINK_RELATIVE = /^[.]{1,2}\/([a-z0-9-]+)(\/#[a-z0-9-]+)?$/ig;
+const LINK_RELATIVE = /^[.]{1,2}\/([a-z0-9-]+)(\/(?:#[a-z0-9-]+)?)?$/ig;
 const LINK_HASH = /^#([a-zA-Z0-9-]+)$/ig;
 
 /**
