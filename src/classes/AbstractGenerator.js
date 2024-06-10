@@ -223,7 +223,7 @@ class AbstractGenerator {
 
     // tag links to current page
     htmlPage = htmlPage.replace(
-      new RegExp(`href="([.]{1,2}/${entry.key})"`, 'g'),
+      new RegExp(`href="([.]{1,2}/${entry.key}/)"`, 'g'),
       'href="$1" class="current"'
     );
 
