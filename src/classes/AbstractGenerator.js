@@ -299,7 +299,7 @@ class AbstractGenerator {
 
     const prev = this.book.config.previousLink;
     vars['entry.previous'] = entry.previous
-      ? `<a class="previous" href="${this.pathToRoot(entry)}/${entry.previous.key}/">${prev}</a>`
+      ? `<a class="previous" href="${this.pathToRoot(entry)}/${entry.previous.key}${entry.previous.key ? '/' : ''}">${prev}</a>`
       : `<a class="previous disabledLink" href="#">${prev}</a>`;
 
     const next = this.book.config.nextLink;
