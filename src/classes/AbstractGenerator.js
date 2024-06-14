@@ -7,7 +7,7 @@ const DokapiBook = require('./DokapiBook');
 
 const LINK_MAILTO = /^mailto:[^\s]+$/ig;
 const LINK_ABSOLUTE = /^https?:\/\/[^\s]+$/ig;
-const LINK_RELATIVE = /^[.]{1,2}\/([a-z0-9-]+)(\/(?:#[a-z0-9-]+)?)?$/ig;
+const LINK_RELATIVE = /^[.]{1,2}\/([a-z0-9-]*)(\/(?:#[a-z0-9-]+)?)?$/ig;
 const LINK_HASH = /^#([a-zA-Z0-9-]+)$/ig;
 
 /**
@@ -223,7 +223,7 @@ class AbstractGenerator {
 
     // tag links to current page
     htmlPage = htmlPage.replace(
-      new RegExp(`href="([.]{1,2}/${entry.key}/)"`, 'g'),
+      new RegExp(`href="([.]{1,2}/${entry.key}/?)"`, 'g'),
       'href="$1" class="current"'
     );
 
@@ -328,6 +328,12 @@ class AbstractGenerator {
    * @returns {string}
    */
   fixMarkdownLinks(mdBody, context) {
+    // prefix "/" links with path to root
+    mdBody = mdBody.replace(
+      /([^!]\[[^\]]*])\(\/(#[a-z0-9-]+)?\)/g,
+      `$1(${context.pathToRoot}/$2)`
+    );
+
     // prefix links with path to root + add trailing "/"
     mdBody = mdBody.replace(
       /([^!]\[[^\]]*])\(\/([a-z0-9-]+)(?:\/(#[a-z0-9-]+)?)?\)/g,
