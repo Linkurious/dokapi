@@ -7,7 +7,7 @@ const _defaults = require('lodash.defaults');
 const marked = require('marked');
 const hljs = require('highlight.js');
 const hljsCypher = require('highlightjs-cypher');
-const Valcheck = require('valcheck').default;
+const Valcheck = require('valcheck/lib/index');
 /** @type {function(Array, Array): Array} */
 const _difference = require('lodash.difference');
 

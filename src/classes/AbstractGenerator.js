@@ -297,15 +297,17 @@ class AbstractGenerator {
       vars['entry.menu'] = this.makeMarkdownIndex(entry.children);
     }
 
-    const prev = this.book.config.previousLink;
+    const prevLabel = this.book.config.previousLink;
+    const prevLink = `${entry.previous.key}${entry.previous.key ? '/' : ''}`;
     vars['entry.previous'] = entry.previous
-      ? `<a class="previous" href="${this.pathToRoot(entry)}/${entry.previous.key}${entry.previous.key ? '/' : ''}">${prev}</a>`
-      : `<a class="previous disabledLink" href="#">${prev}</a>`;
+      ? `<a class="previous" href="${this.pathToRoot(entry)}/${prevLink}">${prevLabel}</a>`
+      : `<a class="previous disabledLink" href="#">${prevLabel}</a>`;
 
-    const next = this.book.config.nextLink;
+    const nextLabel = this.book.config.nextLink;
+    const nextLink = `${entry.next.key}${entry.next.key ? '/' : ''}`;
     vars['entry.next'] = entry.next
-      ? `<a class="next" href="${this.pathToRoot(entry)}/${entry.next.key}/">${next}</a>`
-      : `<a class="next disabledLink" href="#">${next}</a>`;
+      ? `<a class="next" href="${this.pathToRoot(entry)}/${nextLink}/">${nextLabel}</a>`
+      : `<a class="next disabledLink" href="#">${nextLabel}</a>`;
 
     return vars;
   }
