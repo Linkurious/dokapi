@@ -306,7 +306,7 @@ class AbstractGenerator {
     const nextLabel = this.book.config.nextLink;
     const nextLink = entry.next ? `${entry.next.key}${entry.next.key ? '/' : ''}` : '';
     vars['entry.next'] = entry.next
-      ? `<a class="next" href="${this.pathToRoot(entry)}/${nextLink}/">${nextLabel}</a>`
+      ? `<a class="next" href="${this.pathToRoot(entry)}/${nextLink}">${nextLabel}</a>`
       : `<a class="next disabledLink" href="#">${nextLabel}</a>`;
 
     return vars;
