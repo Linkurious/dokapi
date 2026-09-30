@@ -298,13 +298,13 @@ class AbstractGenerator {
     }
 
     const prevLabel = this.book.config.previousLink;
-    const prevLink = `${entry.previous.key}${entry.previous.key ? '/' : ''}`;
+    const prevLink = entry.previous ? `${entry.previous.key}${entry.previous.key ? '/' : ''}` : '';
     vars['entry.previous'] = entry.previous
       ? `<a class="previous" href="${this.pathToRoot(entry)}/${prevLink}">${prevLabel}</a>`
       : `<a class="previous disabledLink" href="#">${prevLabel}</a>`;
 
     const nextLabel = this.book.config.nextLink;
-    const nextLink = `${entry.next.key}${entry.next.key ? '/' : ''}`;
+    const nextLink = entry.next ? `${entry.next.key}${entry.next.key ? '/' : ''}` : '';
     vars['entry.next'] = entry.next
       ? `<a class="next" href="${this.pathToRoot(entry)}/${nextLink}/">${nextLabel}</a>`
       : `<a class="next disabledLink" href="#">${nextLabel}</a>`;
