@@ -3,7 +3,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const Utils = require('./Utils');
-const DokapiBook = require('./DokapiBook');
 
 const LINK_MAILTO = /^mailto:[^\s]+$/ig;
 const LINK_ABSOLUTE = /^https?:\/\/[^\s]+$/ig;
@@ -83,7 +82,7 @@ class AbstractGenerator {
   }
 
   /**
-   * @abstract
+   * @final
    */
   generate() {
     this.log(`Generating site in ${this.target}...`);
