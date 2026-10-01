@@ -32,18 +32,14 @@ const MUSTACHE_REFERENCE_VALID = /^(?:file:|editfile:)?[a-z0-9.]+$/;
 hljs.registerLanguage('cypher', hljsCypher);
 marked.setOptions({
   highlight: function(code, lang, callback) {
-    try {
-      let result;
-      if (lang) {
-        if (lang === 'sh') {lang = 'shell';}
-        result = hljs.highlight(code, {language: lang});
-      } else {
-        result = hljs.highlightAuto(code);
-      }
-      return result.value;
-    } catch(err) {
-      throw err;
+    let result;
+    if (lang) {
+      if (lang === 'sh') {lang = 'shell';}
+      result = hljs.highlight(code, {language: lang});
+    } else {
+      result = hljs.highlightAuto(code);
     }
+    return result.value;
   }
 });
 
