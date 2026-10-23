@@ -16,7 +16,7 @@
     "okapi"
   ],
   "engines": {
-    "node": ">=24.21"
+    "node": ">=24.22"
   },
   "version": "2.0.10",
   "private": false,
