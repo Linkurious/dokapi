@@ -9,9 +9,10 @@ nodeJob {
   runUnitTests = true
   runE2eTests = false
 
-  // Publish to the public npm registry (publishConfig.access = "public")
+  // Public npm on master (publishConfig.access = "public"),
+  // private Nexus npm for preview / non-master builds
   runNpmPublish = true
-  runPrivateNpmPublish = false
+  runPrivateNpmPublish = true
 
   abortPreviousBuild = true
   runForwardMerge = false
