@@ -45,11 +45,11 @@
   },
   "scripts": {
     "//": "invoked using >npm run [script-name]",
-    "lint:ci": "eslint ./src",
+    "lint:ci": "eslint --cache --cache-strategy content -f checkstyle -o reports/checkstyle.xml ./src",
     "lint": "eslint --fix ./src",
     "build": "npm run lint:ci",
     "test": "node --test 'test/**/*.spec.js'",
-    "test:unit": "node --test 'test/**/*.spec.js'",
+    "test:unit": "mkdir -p reports && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=reports/junit-test-results.xml 'test/**/*.spec.js'",
     "bump:patch": "bump2version patch && npm version --no-git-tag-version patch",
     "bump:minor": "bump2version minor && npm version --no-git-tag-version minor",
     "bump:major": "bump2version major && npm version --no-git-tag-version major"
@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "eslint": "10.11.0"
+    "eslint": "10.11.0",
+    "eslint-formatter-checkstyle": "9.0.1"
   }
 }
