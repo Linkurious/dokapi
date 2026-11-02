@@ -1,5 +1,5 @@
 {
-  "name": "dokapi",
+  "name": "@linkurious/dokapi",
   "description": "A Markdown-based Website generator with advanced features",
   "keywords": [
     "documentation",
