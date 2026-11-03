@@ -68,6 +68,7 @@ class DokapiParser {
       variables: {required: true, type: 'object'},
       siteTemplate: {required: true, check: ['file', rootPath]},
       pageTemplate: {required: true, check: ['file', rootPath]},
+      baseUrl: {required: false, check: 'nonEmpty'},
       numbering: {required: false, type: 'boolean'},
       previousLink: {required: false, check: 'nonEmpty'},
       nextLink: {required: false, check: 'nonEmpty'},

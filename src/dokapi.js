@@ -11,7 +11,8 @@ class Dokapi {
    * @param {object} options
    * @param {string} options.input Input folder path
    * @param {string} options.output Output folder path
-   * @param {string} options.outputType Output type ("site" or "page")
+   * @param {string} options.outputType Output type ("site", "page" or "markdown")
+   * @param {string} [options.baseUrl] Public URL of the site (for "markdown" output, overrides `baseUrl` in dokapi.json)
    * @param {boolean} options.watch Whether to keep watching the input folder and re-generate the output on changes.
    * @param {boolean} options.createMissing Whether to create missing referenced markdown files.
    * @param {boolean} options.refreshProject Whether to refresh the copy (clone) of the code project.
@@ -95,7 +96,8 @@ class Dokapi {
       this.options.outputType,
       this.options.output,
       this.options.refreshProject,
-      this.options.createMissing
+      this.options.createMissing,
+      this.options.baseUrl
     );
     book.log(`Generated in ${((Date.now() - t) / 1000).toFixed(2)}s :)`);
   }
@@ -131,7 +133,8 @@ if (require.main === module) {
     .option('-w, --watch', 'Watch the input and re-generate the output on changes')
     .option('-c, --create-missing', 'Create missing referenced Markdown files')
     .option('-r, --refresh-project', 'Force to re-clone the input project')
-    .option('-t, --output-type <type>', 'Choose the output type', 'site')
+    .option('-t, --output-type <type>', 'Choose the output type (site, page or markdown)', 'site')
+    .option('-b, --base-url <url>', 'Public URL of the site (makes "markdown" links absolute)')
     .parse(process.argv);
   const dokapi = new Dokapi(cli);
 
