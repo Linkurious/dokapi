@@ -3,7 +3,7 @@
 A Markdown-based Website generator with awesome features.
 Usage:
 ```
->npm install -g dokapi
+>npm install -g @linkurious/dokapi
 >dokapi -i my/input/folder -o my/output/folder
 ```
 
