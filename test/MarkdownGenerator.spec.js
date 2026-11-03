@@ -196,4 +196,87 @@ describe('markdown output errors', () => {
   it('should fail on malformed internal links', () => {
     failing({'child.md': 'See [x](/Some/Path).\n'}, /Unexpected link URL/);
   });
+
+  it('should fail on relative links, which are not supported', () => {
+    failing({'child.md': 'See [x](./nope/) and [y](../intro/).\n'}, /Unexpected link URL/);
+  });
+
+  it('should fail on reference-style internal links, which are not supported', () => {
+    failing({'child.md': 'See [x][ref].\n\n[ref]: /intro\n'}, /Unexpected link URL: "\[ref]: \/intro"/);
+  });
+
+  it('should fail on an entry using the key of the main entry file', () => {
+    const index = [
+      {name: 'Intro', key: 'intro', content: 'intro.md'},
+      {name: 'Index', key: 'index', content: 'idx.md'}
+    ];
+    const files = {'main.md': 'Main.\n', 'intro.md': 'Intro.\n', 'idx.md': 'Replacement.\n'};
+    const tmp = fs.mkdtempSync(path.resolve(os.tmpdir(), 'dokapi-md-'));
+    try {
+      makeBook(path.resolve(tmp, 'book'), files, {index});
+      assert.throws(
+        () => run(path.resolve(tmp, 'book'), path.resolve(tmp, 'out'), BASE_URL),
+        /Entry key "index" is reserved/
+      );
+    } finally {
+      fs.removeSync(tmp);
+    }
+  });
+});
+
+describe('markdown output with code', () => {
+  const generate = files => {
+    const tmp = fs.mkdtempSync(path.resolve(os.tmpdir(), 'dokapi-md-'));
+    try {
+      makeBook(path.resolve(tmp, 'book'), Object.assign({}, FILES, files));
+      run(path.resolve(tmp, 'book'), path.resolve(tmp, 'out'), BASE_URL);
+      return fs.readFileSync(path.resolve(tmp, 'out', 'markdown', 'child.md'), 'utf8');
+    } finally {
+      fs.removeSync(tmp);
+    }
+  };
+
+  it('should neither validate nor rewrite links in fenced code and inline code', () => {
+    const child = generate({'child.md': [
+      'A [real](/intro) link, and `[inline](/intro)` or `[bad](/nope)` samples:',
+      '',
+      '```js',
+      'const a = "[Example](/nope)"; // not a link',
+      'const b = "[Example](/intro)";',
+      '```',
+      '',
+      '~~~',
+      '[tilde](/nope)',
+      '~~~',
+      ''
+    ].join('\n')});
+    assert.match(child, /A \[real]\(https:\/\/example\.com\/doc\/intro\.md\) link/);
+    assert.match(child, /`\[inline]\(\/intro\)` or `\[bad]\(\/nope\)` samples/);
+    assert.match(child, /const a = "\[Example]\(\/nope\)"; \/\/ not a link/);
+    assert.match(child, /const b = "\[Example]\(\/intro\)";/);
+    assert.match(child, /~~~\n\[tilde]\(\/nope\)\n~~~/);
+  });
+
+  it('should not validate links in injected code files', () => {
+    const child = generate({
+      'child.md': 'Sample:\n\n{{file:sample.js}}\n',
+      'sample.js': 'const s = "[x](/nope)";'
+    });
+    assert.match(child, /```js\nconst s = "\[x]\(\/nope\)";\n```/);
+  });
+
+  it('should still validate links after code', () => {
+    const tmp = fs.mkdtempSync(path.resolve(os.tmpdir(), 'dokapi-md-'));
+    try {
+      makeBook(path.resolve(tmp, 'book'), Object.assign({}, FILES, {
+        'child.md': '```\ncode\n```\n\nThen a [broken](/nope) link.\n'
+      }));
+      assert.throws(
+        () => run(path.resolve(tmp, 'book'), path.resolve(tmp, 'out'), BASE_URL),
+        /Broken internal link "\/nope"/
+      );
+    } finally {
+      fs.removeSync(tmp);
+    }
+  });
 });

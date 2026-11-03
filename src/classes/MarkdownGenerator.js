@@ -8,7 +8,33 @@ const AbstractGenerator = require('./AbstractGenerator');
 const INTERNAL_LINK_RE = /(^|[^!])(\[[^\]]*])\(\/([a-z0-9-]*)(?:\/?(#[a-z0-9-]+))?\/?\)/g;
 const HASH_LINK_RE = /(^|[^!])(\[[^\]]*])\((#[a-zA-Z0-9-]+)\)/g;
 const IMAGE_RE = /(!\[[^\]]*])\(([^)]+?)\)/g;
-const LEFTOVER_ABSOLUTE_LINK_RE = /\]\(\/[^)]*\)/;
+// internal links that are left once supported ones were rewritten: root-relative or relative
+// inline links ("[a](/b)", "[a](./b/)"), and reference definitions ("[a]: /b")
+const LEFTOVER_LINK_RE = new RegExp(
+  '\\]\\((?:/|\\.{1,2}/)[^)]*\\)|' + // inline
+  '^ {0,3}\\[[^\\]]+\\]:[ \\t]*<?(?:/|\\.{1,2}/)\\S*', // reference definition
+  'm'
+);
+
+// code that must be left as is (no link validation or rewriting): fenced blocks, then inline spans
+const FENCED_CODE_RE = /^ {0,3}(`{3,}|~{3,})[^\n]*\n[\s\S]*?(?:^ {0,3}\1[`~]*[ \t]*$|(?![\s\S]))/gm;
+const INLINE_CODE_RE = /(`+)(?!`)[\s\S]*?(?<!`)\1(?!`)/g;
+const MASK = String.fromCharCode(0);
+
+/**
+ * Replaces code (fenced blocks and inline spans) by placeholders, so that links in code samples
+ * are neither validated nor rewritten (the HTML generators only look at actual links either).
+ *
+ * @param {string} markdown
+ * @returns {{masked: string, restore: function(string): string}}
+ */
+function maskCode(markdown) {
+  const codes = [];
+  const mask = code => `${MASK}${codes.push(code) - 1}${MASK}`;
+  const masked = markdown.replace(FENCED_CODE_RE, mask).replace(INLINE_CODE_RE, mask);
+  const placeholderRe = new RegExp(`${MASK}(\\d+)${MASK}`, 'g');
+  return {masked, restore: text => text.replace(placeholderRe, (m, i) => codes[Number(i)])};
+}
 
 /**
  * Generates plain Markdown (variables resolved, links made absolute) for LLM consumption:
@@ -34,6 +60,16 @@ class MarkdownGenerator extends AbstractGenerator {
 
   $generate() {
     this.log('Generating Markdown content...');
+
+    // "index.md" is the file of the main entry
+    this.forEntries(entry => {
+      if (entry.key === 'index') {
+        throw new Error(
+          'Entry key "index" is reserved by the Markdown output (it is the file name of the main ' +
+          `entry): rename the key of the entry "${entry.name}".`
+        );
+      }
+    });
 
     /** @type {Array<{entry: DokapiEntry, title: string, markdown: string}>} */
     const pages = [];
@@ -92,8 +128,10 @@ class MarkdownGenerator extends AbstractGenerator {
       body = this.makeMarkdownIndex(entry.children || []);
     }
 
-    this.$checkInternalLinks(body, entry.content || '[generated]');
-    body = this.fixMarkdownLinks(body, context).replace(/\u200B/g, '').trim();
+    // links in code samples are literal: neither validated nor rewritten
+    const {masked, restore} = maskCode(body);
+    this.$checkInternalLinks(masked, entry.content || '[generated]');
+    body = restore(this.fixMarkdownLinks(masked, context)).replace(/\u200B/g, '').trim();
 
     const source = this.baseUrl
       ? `Source: ${this.baseUrl}/${entry.key ? entry.key + '/' : ''}\n\n`
@@ -144,11 +182,13 @@ class MarkdownGenerator extends AbstractGenerator {
         : `${alt}(${this.url(`images/${context.currentKey}__${src}`)})`
     );
 
-    const leftover = mdBody.match(LEFTOVER_ABSOLUTE_LINK_RE);
+    // like the HTML generators, only inline links "/entry-key" and "/entry-key/#anchor" are
+    // supported: reject the other internal forms (relative links, reference definitions)
+    const leftover = mdBody.match(LEFTOVER_LINK_RE);
     if (leftover) {
       throw new Error(
-        `Unexpected link URL: "${leftover[0]}" in entry "${context.currentKey}" ` +
-        '(internal links must be of the form "/entry-key" or "/entry-key/#anchor")'
+        `Unexpected link URL: "${leftover[0].trim()}" in entry "${context.currentKey}" ` +
+        '(internal links must be inline links of the form "/entry-key" or "/entry-key/#anchor")'
       );
     }
     return mdBody;
