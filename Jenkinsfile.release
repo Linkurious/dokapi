@@ -3,5 +3,4 @@
 lkeSubReleaseJob {
   // General
   projectName = "linkurious/dokapi"
-  runAssetWaiter = false
 }
