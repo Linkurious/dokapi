@@ -246,7 +246,7 @@ class DokapiBook {
       const packagePath = path.resolve(projectSources, 'package.json');
       const packageInfo = fs.readJsonSync(packagePath, {encoding: 'utf8'});
       for (let key in packageInfo) {
-        if (!packageInfo.hasOwnProperty(key) || typeof packageInfo[key] !== 'string') {
+        if (!Object.hasOwn(packageInfo, key) || typeof packageInfo[key] !== 'string') {
           continue;
         }
         let varKey = 'package.' + key;

@@ -1,5 +1,5 @@
 {
-  "name": "dokapi",
+  "name": "@linkurious/dokapi",
   "description": "A Markdown-based Website generator with advanced features",
   "keywords": [
     "documentation",
@@ -16,9 +16,9 @@
     "okapi"
   ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=24.21"
   },
-  "version": "2.0.9",
+  "version": "2.0.10",
   "private": false,
   "repository": {
     "type": "git",
@@ -45,29 +45,29 @@
   },
   "scripts": {
     "//": "invoked using >npm run [script-name]",
-    "lint": "eslint ./src",
-    "patch": "npm version patch && git push && npm publish",
-    "minor": "npm version minor && git push && npm publish",
-    "test": "mocha test/**/*.spec.js"
+    "lint:ci": "eslint --cache --cache-strategy content -f checkstyle -o reports/checkstyle.xml ./src",
+    "lint": "eslint --fix ./src",
+    "build": "echo 'Nothing to build: dokapi ships its source as-is (no-op)'",
+    "test": "node --test 'test/**/*.spec.js'",
+    "test:unit": "mkdir -p reports && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=reports/junit-test-results.xml 'test/**/*.spec.js'",
+    "bump:patch": "bump2version patch && npm version --no-git-tag-version patch",
+    "bump:minor": "bump2version minor && npm version --no-git-tag-version minor",
+    "bump:major": "bump2version major && npm version --no-git-tag-version major"
   },
   "dependencies": {
-    "fs-extra": "10.0.1",
-    "valcheck": "1.0.20",
-    "lodash.difference": "4.5.0",
-    "lodash.defaults": "4.2.0",
-    "marked": "3.0.8",
-    "watch": "1.0.2",
     "commander": "2.20.3",
-    "highlight.js": "11.3.1",
-    "highlightjs-cypher": "1.1.5"
+    "fs-extra": "11.4.1",
+    "highlight.js": "11.12.0",
+    "highlightjs-cypher": "1.2.0",
+    "lodash.defaults": "4.2.0",
+    "lodash.difference": "4.5.0",
+    "marked": "3.0.8",
+    "valcheck": "1.2.6",
+    "watch": "1.0.2"
   },
   "devDependencies": {
-    "eslint": "3.9.1",
-    "eslint-plugin-import-order": "2.1.4",
-    "ink-docstrap": "1.1.4",
-    "istanbul": "1.1.0-alpha.1",
-    "jsdoc": "3.4.1",
-    "mocha": "6.1.4",
-    "should": "13.2.3"
+    "@eslint/js": "10.0.1",
+    "eslint": "10.11.0",
+    "eslint-formatter-checkstyle": "9.0.1"
   }
 }
