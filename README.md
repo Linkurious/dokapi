@@ -10,7 +10,8 @@ Usage:
 Options:
 - `-i` or `--input`: path of input folder.
 - `-o` or `--output`: path to output folder.
-- `-t` or `--type`: type of desired output (`site`  or `page`, default: `site`).
+- `-t` or `--output-type`: type of desired output (`site`, `page` or `markdown`, default: `site`).
+- `-b` or `--base-url`: public URL of the site, used by the `markdown` output to make links absolute (overrides `baseUrl` in `dokapi.json`).
 - `-w` or `--watch`: keep running and dynamicly regenerate output when input changes (watches input folder for changes).
 - `-c` or `--create-missing`: automatically create missing referenced markdown files. 
 - `-r` or `--refresh-project`: force to re-download in code project used to extract code comments (cached by default)
@@ -25,6 +26,7 @@ Options:
 - Uses [marky-markdown](https://github.com/npm/marky-markdown#what-it-does) to emulate Github-style markdown rendering;
 - Code-coloring down with [Highlights](https://www.npmjs.com/package/highlights), enables easy CSS customization;
 - Generate *multi-page* or *single-page* site with the same content;
+- [Generate plain Markdown for LLMs (`llms.txt`)](#markdown-output-for-llms) with the same content;
 - [Inject code files in your markdown](#injecting-code-files-in-your-markdown-content) with `{{file:my_file.js}}`or `{{editfile:other_file.sh}}`;
 - [Sanity checks](#sanity-checks) everywhere (never have a broken link of missing image in your site);
 - [Watcher to dynamically re-generate your site when your content changed](#input-watcher);
@@ -78,6 +80,7 @@ Example:
 - `main.name` (*default*: `"Introduction"`): Name of main entry in site-menu;
 - `project`: GitHub-style URL or relative path to source-code project;
 - `skipProjectVariables`: (*default:* `false`): Prevent project variables (in `@dokapi` comments) from being extracted;
+- `baseUrl`: Public URL of the generated site (e.g. `https://example.com/manual/latest`), used by the `markdown` output to make links absolute;
 - `numbering`: Whether to use ordered (`<ol>`) or unordered (`<ul>`) tags when generating the site-menu;
 - `externalLinksToBlank`: Whether to open external links in a new tab;
 - `index`: Content structure
@@ -154,6 +157,21 @@ If you reference a code project, the following variables will be extracted from 
 - `package.description`;
 - `package.version`;
 - `package.license`;
+
+## Markdown output for LLMs
+
+`dokapi -i my/input/folder -o my/output/folder -t markdown -b https://example.com/manual/latest`
+
+generates, in `my/output/folder/markdown`:
+
+- one Markdown file per entry (`<key>.md`, and `index.md` for the main entry) with variables resolved, code files injected as code blocks, and internal links and images made absolute;
+- `llms.txt`: an index of all (non-hidden) entries, following the [llms.txt](https://llmstxt.org) convention;
+- `llms-full.txt`: all (non-hidden) entries concatenated, in menu order.
+
+Hidden entries get a file but are left out of `llms.txt` and `llms-full.txt`.
+Images are not copied: they are referenced like in the `site` output (`images/<key>__<file>`), so the generated files are meant to be placed next to the `site` output.
+Without a base URL, links are relative to the output folder.
+The same sanity checks as for the other outputs apply (broken links, undefined variables, missing images).
 
 ## Injecting code files in your markdown content
  

@@ -5,6 +5,7 @@ const path = require('path');
 const Utils = require('./Utils');
 const SiteGenerator = require('./SiteGenerator');
 const PdfGenerator = require('./PdfGenerator');
+const MarkdownGenerator = require('./MarkdownGenerator');
 
 /**
  * @typedef {object} DokapiEntry
@@ -151,13 +152,14 @@ class DokapiBook {
   }
 
   /**
-   * @param {string} outputType 'site' or 'page'
+   * @param {string} outputType 'site', 'page' or 'markdown'
    * @param {string} outputDir Output directory
    * @param {boolean} [forceDownloadProject=false]
    * @param {boolean} [createMissingMarkdown=false]
+   * @param {string} [baseUrl] Public URL of the site (defaults to `config.baseUrl`), used by 'markdown'
    */
-  generate(outputType, outputDir, forceDownloadProject, createMissingMarkdown) {
-    Utils.check.values('outputType', outputType, ['page', 'site'], true);
+  generate(outputType, outputDir, forceDownloadProject, createMissingMarkdown, baseUrl) {
+    Utils.check.values('outputType', outputType, ['page', 'site', 'markdown'], true);
 
     // if the output dir does not exist, create it
     if (!fs.existsSync(outputDir)) {
@@ -178,6 +180,13 @@ class DokapiBook {
       generator = new SiteGenerator(this, outputDir, projectSources);
     } else if (outputType === 'page') {
       generator = new PdfGenerator(this, outputDir, projectSources);
+    } else if (outputType === 'markdown') {
+      generator = new MarkdownGenerator(
+        this,
+        outputDir,
+        projectSources,
+        baseUrl || this.config.baseUrl
+      );
     } else {
       throw new Error(`Unknown output type: ${outputType}.`);
     }
