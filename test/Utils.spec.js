@@ -49,3 +49,14 @@ describe('Utils.forReferences', () => {
   });
 
 });
+
+describe('Utils.check', () => {
+
+  it('should check files and directories', () => {
+    // the checks of files and directories only exist in the "node" build of valcheck: with the
+    // "index" build every run failed with "Utils.check.dir is not a function"
+    assert.equal(typeof Utils.check.dir, 'function');
+    assert.equal(typeof Utils.check.file, 'function');
+  });
+
+});

@@ -7,7 +7,8 @@ const _defaults = require('lodash.defaults');
 const marked = require('marked');
 const hljs = require('highlight.js');
 const hljsCypher = require('highlightjs-cypher');
-const Valcheck = require('valcheck/lib/index');
+// the "node" build has the checks of files and directories (check.file, check.dir), "index" has not
+const Valcheck = require('valcheck/lib/node');
 /** @type {function(Array, Array): Array} */
 const _difference = require('lodash.difference');
 
