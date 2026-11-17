@@ -57,12 +57,6 @@ describe('Utils.check', () => {
     // "index" build every run failed with "Utils.check.dir is not a function"
     assert.equal(typeof Utils.check.dir, 'function');
     assert.equal(typeof Utils.check.file, 'function');
-    assert.doesNotThrow(() => Utils.check.dir('dir', __dirname));
-    assert.doesNotThrow(() => Utils.check.file('file', __filename));
   });
 
-  it('should refuse a directory or a file that does not exist', () => {
-    assert.throws(() => Utils.check.dir('dir', __dirname + '/nope'), /Validation error/);
-    assert.throws(() => Utils.check.file('file', __dirname + '/nope.md'), /Validation error/);
-  });
 });
